@@ -3,7 +3,8 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema({
     name: {
-        type: String, required: true
+        type: String, 
+        required: true
     },
     email: {
         type: String,
@@ -20,9 +21,11 @@ const userSchema = new Schema({
 
     googleId: {
         type: String,
-        unique: true,
+        unique:true,
+        sparse: true,
 
     },
+
     password: {
         type: String,
         required: false,

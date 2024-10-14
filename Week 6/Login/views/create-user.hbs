@@ -1,0 +1,44 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <!-- Add other navigation elements as needed -->
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <h2>Create New User</h2>
+
+  {{#if errors}}
+    <div class="alert alert-danger">
+      <ul>
+        {{#each errors}}
+          <li>{{this}}</li>
+        {{/each}}
+      </ul>
+    </div>
+  {{/if}}
+
+  <form action="/admin/create" method="POST">
+    <div class="mb-3">
+      <label for="fullName" class="form-label">Full Name</label>
+      <input type="text" class="form-control" id="fullName" name="fullname" value="{{formData.fullname}}" required>
+    </div>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email" name="email" value="{{formData.email}}" required>
+    </div>
+    <div class="mb-3">
+      <label for="username" class="form-label">Username</label>
+      <input type="text" class="form-control" id="username" name="username" value="{{formData.username}}" required>
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" class="form-control" id="password" name="password" required>
+    </div>
+    <div class="mb-3">
+      <label for="passwordConfirm" class="form-label">Confirm Password</label>
+      <input type="password" class="form-control" id="passwordConfirm" name="passwordConfirm" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Create User</button>
+  </form>
+</div>
