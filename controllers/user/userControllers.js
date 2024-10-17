@@ -235,6 +235,8 @@ const login = async (req,res)=>{
             return res.render("login",{message:"Incorrect Password",email})
         }
         req.session.user =findUser._id;
+        //req.user =findUser;
+        console.log("user logged in",req.session.user)
         res.redirect("/")
     } catch (error) {
         console.error("login error",error);
@@ -248,18 +250,22 @@ const login = async (req,res)=>{
 
 const loadHomepage = async (req, res) => {
     try {
-        const user = req.session.user; // This will contain the user's ID
-
+        //const user = req.user; // This will contain the user's ID
+        const userId = req.session.user
         // If user is defined, fetch user data
         let userData = null;
-        if (user) {
-            userData = await User.findOne({ _id: user }); // Corrected here, it should be user (not user._id)
+        if (userId) {
+            userData = await User.findById(userId); 
+            if(!userData){
+                console.log("User not found in database for ID:", userId); // Log if user not found
+                return res.redirect("/login");
+            }
         }
 
         // Pass userData to home view
         res.render("home", { user: userData });
     } catch (error) {
-        console.log('Home page not found');
+        console.log('Home page not found',error);
         res.status(500).send('Server error');
     }
 }

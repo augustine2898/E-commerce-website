@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error page</title>
+    <style>
+        /*======================
+            404 page
+        =======================*/
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body,
+        html {
+            height: 100%;
+            font-family: 'Arvo', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+        }
+
+        .page_404 {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .four_zero_four_bg {
+            background-image: url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif);
+            height: 400px;
+            background-position: center;
+            background-size: cover;
+            /* Ensures the image covers the entire area */
+        }
+
+        .four_zero_four_bg h1 {
+            font-size: 80px;
+            color: #333;
+            /* Added color for better visibility */
+        }
+
+        .four_zero_four_bg h3 {
+            font-size: 40px;
+            /* Adjusted font size for better balance */
+            color: #555;
+            /* Added color for better visibility */
+        }
+
+        .link_404 {
+            color: #fff !important;
+            padding: 10px 20px;
+            background: #39ac31;
+            margin: 20px 0;
+            display: inline-block;
+            text-decoration: none;
+            /* Remove underline */
+        }
+
+        .contant_box_404 {
+            margin-top: -50px;
+        }
+
+        @media (max-width: 768px) {
+            .four_zero_four_bg h1 {
+                font-size: 50px;
+                /* Responsive font size */
+            }
+
+            .four_zero_four_bg h3 {
+                font-size: 30px;
+                /* Responsive font size */
+            }
+
+            .link_404 {
+                font-size: 16px;
+                /* Responsive font size */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <section class="page_404">
+        <div class="four_zero_four_bg">
+            <h1 class="text-center">404</h1>
+        </div>
+        <div class="contant_box_404">
+            <h3 class="h2">Looks like you're lost</h3>
+            <p>The page you are looking for is not available!</p>
+            <a href="/admin" class="link_404">Go to Home</a>
+        </div>
+    </section>
+</body>
+
+</html>

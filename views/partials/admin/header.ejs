@@ -1,0 +1,159 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Furni Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="/images/weblogo.png" type="image/x-icon">
+    <link href="/admin-assets/css/main.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/16d4885483.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style>
+        body {
+            background-color: #f4f5f7;
+            color: #333;
+        }
+        .navbar {
+            background-color: #5f7883;
+            color: white;
+        }
+        .navbar-aside {
+            background-color: #3b5d50;
+            color: white;
+            min-width: 240px;
+            padding-top: 20px;
+        }
+        .navbar-aside .brand-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .navbar-aside .brand-wrap img {
+            height: 40px;
+        }
+        .menu-aside {
+            list-style: none;
+            padding: 0;
+        }
+        .menu-item {
+            margin-bottom: 10px;
+        }
+        .menu-item a {
+            color: #e1e3e5;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+        .menu-item a:hover, .menu-item a.active {
+            background-color: #3b5d50;
+            color: white;
+        }
+        .menu-item i {
+            font-size: 1.2rem;
+            margin-right: 10px;
+        }
+        .main-header {
+            background-color: #5f7883;
+            padding: 10px 20px;
+        }
+        .main-header .col-nav .nav {
+            display: flex;
+            align-items: center;
+        }
+        .main-header .dropdown-menu {
+            background-color: #6f8f8f;
+            border: none;
+            border-radius: 5px;
+        }
+        .dropdown-menu .dropdown-item {
+            color: #ffffff;
+        }
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #4a7c78;
+        }
+        .dropdown-item.text-danger {
+            color: #ff6961;
+        }
+        .dropdown-item.text-danger:hover {
+            color: #ffffff;
+            background-color: #ff6961;
+        }
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #f1f1f1;
+            font-size: 0.9rem;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="screen-overlay"></div>
+    <aside class="navbar-aside" id="offcanvas_aside">
+        <div class="brand-wrap">
+            <a href="#">
+                <img src="/images/weblogo.png" alt="Furni Logo">
+            </a>
+        </div>
+        <nav>
+            <ul class="menu-aside">
+                <li class="menu-item">
+                    <a href="/admin" class="menu-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                </li>
+                <li class="menu-item">
+                    <a href="/admin/users" class="menu-link"><i class="fas fa-users"></i> Customers</a>
+                </li>
+                <li class="menu-item">
+                    <a href="/admin/category" class="menu-link"><i class="fas fa-list-alt"></i> Categories</a>
+                </li>
+                <!-- <li class="menu-item">
+                    <a href="/admin/brands" class="menu-link"><i class="fas fa-star"></i> Brands</a>
+                </li> -->
+                <li class="menu-item">
+                    <a href="/admin/addProducts" class="menu-link"><i class="fas fa-plus-square"></i> Add Product</a>
+                </li>
+                <li class="menu-item">
+                    <a href="/admin/products" class="menu-link"><i class="fas fa-boxes"></i> Products</a>
+                </li>
+                <li class="menu-item">
+                    <a href="/admin/coupon" class="menu-link"><i class="fas fa-tags"></i> Coupons</a>
+                </li>
+                <li class="menu-item">
+                    <a href="/admin/banner" class="menu-link"><i class="fas fa-images"></i> Banners</a>
+                </li>
+                <li class="menu-item">
+                    <a href="/admin/orderList" class="menu-link"><i class="fas fa-shopping-cart"></i> Orders</a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+    
+    <main class="main-wrap">
+        <header class="main-header navbar">
+            <div class="col-search">
+                <!-- Search bar or title can go here -->
+            </div>
+            <div class="col-nav">
+                <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul class="nav">
+                    <li class="dropdown nav-item">
+                        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
+                            <img class="img-xs rounded-circle" src="/admin-assets/imgs/people/avatar1.jpg" alt="User">
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item text-danger" href="/admin/logout">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </header>

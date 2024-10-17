@@ -1,0 +1,506 @@
+<%- include("../../views/partials/admin/header") %>
+
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css" />
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
+        <style>
+            /* General styling */
+            body {
+                font-family: Arial, sans-serif;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            /* Form styling */
+            .form-group {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 15px;
+            }
+
+            .form-label {
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+
+            .form-control {
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            /* Responsive grid layout */
+            .row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+
+            .col-md-3,
+            .col-md-8 {
+                flex: 1;
+                min-width: 100%;
+                max-width: 100%;
+            }
+
+            @media (min-width: 768px) {
+                .col-md-3 {
+                    max-width: 25%;
+                }
+
+                .col-md-8 {
+                    max-width: 70%;
+                }
+            }
+
+            /* Button styling */
+            .btn-primary {
+                background-color: #007bff;
+                color: #fff;
+                border: none;
+                padding: 10px;
+                border-radius: 5px;
+                transition: background-color 0.3s;
+            }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+            }
+
+            /* Table styling */
+            .table-responsive {
+                overflow-x: auto;
+            }
+
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .table th,
+            .table td {
+                padding: 15px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+
+            /* Pagination */
+            .pagination-container {
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
+            }
+
+            .pagination a,
+            .pagination .current-page {
+                margin: 0 5px;
+                padding: 8px 12px;
+                text-decoration: none;
+                border-radius: 5px;
+                border: 1px solid #ddd;
+            }
+
+            .pagination a:hover {
+                background-color: #f0f0f0;
+            }
+
+            /* Error message */
+            .error-message {
+                color: red;
+                font-size: 0.9em;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+
+            .btn-info {
+                background-color: #007bff;
+                /* Match primary color */
+                color: #fff;
+                border: none;
+            }
+
+            .btn-info:hover {
+                background-color: #0056b3;
+            }
+
+            .btn.btn-secondary {
+                background-color: #6c757d;
+                /* Match secondary button color */
+                color: #fff;
+                border: none;
+                padding: 8px 20px;
+            }
+
+            .btn-secondary:hover {
+                background-color: #5a6268;
+            }
+
+            .btn-danger {
+                background-color: #dc3545;
+                /* Match danger color */
+                color: #fff;
+                border: none;
+            }
+
+            .btn-danger:hover {
+                background-color: #c82333;
+            }
+
+            .btn-success {
+                background-color: #28a745;
+                /* Match success color */
+                color: #fff;
+                border: none;
+            }
+
+            .btn-success:hover {
+                background-color: #218838;
+            }
+        </style>
+    </head>
+
+    <body>
+        <section class="container">
+            <div class="header text-center mb-20">
+                <h2 class="content-title">Category Management</h2>
+                <form action="/admin/category/" method="get" class="d-inline">
+                    <div class="input-group" style="width: 300px; margin: 10px auto;">
+                        <input type="text" class="form-control" placeholder="Search categories" name="search" />
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <form method="post" action="/admin/addCategory" onsubmit="return handleFormSubmit(event)">
+                        <div class="form-group">
+                            <label for="product_name" class="form-label">Name</label>
+                            <input type="text" name="name" placeholder="Type here" class="form-control"
+                                id="product_name" />
+                            <div id="name-error" class="error-message"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="descriptionId" class="form-label">Description</label>
+                            <textarea name="description" placeholder="Type here" class="form-control"
+                                id="descriptionId"></textarea>
+                            <div id="description-error" class="error-message"></div>
+                        </div>
+                        <button class="btn btn-primary w-100" type="submit">Create Category</button>
+                    </form>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Offer Price</th>
+                                    <th>Offer</th>
+                                    <th>Status</th>
+                                    <th>List/Unlist</th>
+                                    <th>Edit/Remove</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% cat.reverse().forEach((category, index)=> { %>
+                                    <tr>
+                                        <td>
+                                            <%= category.name %>
+                                        </td>
+                                        <td>
+                                            <%= category.description %>
+                                        </td>
+                                        <td>
+                                            <%= category.categoryOffer !==undefined ? category.categoryOffer + '%'
+                                                : '0%' %>
+                                        </td>
+                                        <td>
+                                            <% if (category.categoryOffer===undefined || category.categoryOffer===0) {
+                                                %>
+                                                <button class="btn btn-info btn-sm"
+                                                    onclick="addOffer('<%= category._id %>')">Add Offer</button>
+                                                <% } else { %>
+                                                    <button class="btn btn-secondary btn-sm"
+                                                        onclick="removeOffer('<%= category._id %>')">Remove</button>
+                                                    <% } %>
+                                        </td>
+                                        <td>
+                                            <span
+                                                class="badge <%= category.isListed ? 'alert-success' : 'alert-danger' %>">
+                                                <%= category.isListed ? 'Listed' : 'Unlisted' %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <% if (category.isListed) { %>
+                                                <a href="/admin/listCategory?id=<%= category._id %>"
+                                                    class="btn btn-danger btn-sm">Unlist</a>
+                                                <% } else { %>
+                                                    <a href="/admin/unlistCategory?id=<%= category._id %>"
+                                                        class="btn btn-success btn-sm">List</a>
+                                                    <% } %>
+                                        </td>
+                                        <td>
+                                            <a href="/admin/editCategory?id=<%=category._id%>"
+                                                class="btn btn-info btn-sm">Edit</a>
+                                            <a href="javascript:void(0)" class=""
+                                                onclick="deleteCategory('<%= category._id %>')">
+                                                <i class="bi bi-trash"
+                                                    style="font-size: 1.25em; margin-left: 10px;"></i>
+                                            </a>
+
+                                        </td>
+
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pagination-container">
+                <% if (currentPage> 1) { %>
+                    <a href="?page=<%= currentPage - 1 %>">Previous</a>
+                    <% } %>
+                        <% for (let i=1; i <=totalPages; i++) { %>
+                            <% if (i===currentPage) { %>
+                                <span class="current-page">
+                                    <%= i %>
+                                </span>
+                                <% } else { %>
+                                    <a href="?page=<%= i %>">
+                                        <%= i %>
+                                    </a>
+                                    <% } %>
+                                        <% } %>
+                                            <% if (currentPage < totalPages) { %>
+                                                <a href="?page=<%= currentPage + 1 %>">Next</a>
+                                                <% } %>
+            </div>
+        </section>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+        <script>
+            function handleFormSubmit(event) {
+                event.preventDefault();
+
+                // Run additional validation before continuing
+                if (!validationForm()) {
+                    return;
+                }
+
+                const name = document.getElementById('product_name').value.trim();
+                const description = document.getElementById('descriptionId').value.trim();
+
+                fetch('/admin/addCategory', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, description })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => {
+                                throw new Error(err.error);
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        location.reload();
+                    })
+                    .catch(error => {
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: "Oops",
+                            text: error.message
+                        })
+
+                    });
+            }
+
+            // Validation function to handle form field checks
+            function validationForm() {
+                clearErrorMessages();
+
+                const name = document.getElementById("product_name").value.trim();
+                const description = document.getElementById("descriptionId").value.trim();
+                let isValid = true;
+
+                if (name === "") {
+                    displayErrorMessage("name-error", "Please enter a name");
+                    isValid = false;
+                } else if (!/^[a-zA-Z\s]+$/.test(name)) {
+                    displayErrorMessage("name-error", "Category name should contain only alphabetic characters");
+                    isValid = false;
+                }
+
+                if (description === "") {
+                    displayErrorMessage("description-error", "Please enter a description");
+                    isValid = false;
+                }
+
+                return isValid;
+            }
+
+            // Function to show error messages
+            function displayErrorMessage(elementId, message) {
+                const errorElement = document.getElementById(elementId);
+                errorElement.innerHTML = message;
+                errorElement.style.display = "block";
+            }
+
+            // Function to clear any error messages displayed on the form
+            function clearErrorMessages() {
+                const errorElements = document.getElementsByClassName("error-message");
+                Array.from(errorElements).forEach((element) => {
+                    element.innerText = "";
+                    element.style.display = "none";
+                });
+            }
+
+            async function addOffer(categoryId) {
+                const { value: amount } = await Swal.fire({
+                    title: "Offer in percentage",
+                    input: "number",
+                    inputLabel: "Percentage",
+                    inoutPlaceholder: "%",
+                });
+
+                if (amount) {
+                    try {
+                        const response = await fetch("/admin/addCategoryOffer", {
+                            method: "POST",
+                            headers: {
+                                'content-type': "application/json",
+                            },
+                            body: JSON.stringify({
+                                percentage: amount,
+                                categoryId: categoryId,
+                            })
+
+                        })
+                        const data = await response.json();
+                        if (response.ok && data.status === true) {
+                            Swal.fire(
+                                "Offer added",
+                                "The offerhas been added",
+                                "success"
+
+                            ).then(() => {
+                                location.reload();
+
+                            })
+                        } else {
+                            Swal.fire("Failed".data.message || "Adding offer failed", "error");
+                        }
+                    } catch (error) {
+                        Swal.fire(
+                            "Error",
+                            "An error occured while adding the offer",
+                            "error"
+                        );
+                        console.log("Error adding offer", error)
+
+                    }
+                }
+            }
+
+
+            async function removeOffer(categoryId) {
+                try {
+                    const response = await fetch("/admin/removeCategoryOffer", {
+                        method: "POST",
+                        headers: {
+                            'content-type': "application/json",
+                        },
+                        body: JSON.stringify({
+                            categoryId: categoryId,
+                        })
+                    })
+
+                    const data = await response.json();
+
+                    if (response.ok && data.status) {
+                        Swal.fire(
+                            " Offer removed",
+                            "The offer has been removed",
+                            "success"
+                        ).then(() => {
+                            location.reload()
+                        })
+                    } else {
+                        Swal.fire("Failed", data.message || "Remove offers failed", "error");
+                    }
+                } catch (error) {
+                    Swal.fire(
+                        "Error",
+                        "An error occured while removing the offer",
+                        "error"
+                    );
+                    console.error("Error removing offer", error);
+                }
+            }
+
+
+            function deleteCategory(categoryId) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This category will be permanently deleted!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Call your delete endpoint
+                        fetch(`/admin/removeCategory/${categoryId}`, {
+                            method: 'DELETE', // Use DELETE method
+                            headers: {
+                                'Content-Type': 'application/json', // Ensure content type is JSON
+                            },
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    return response.json().then(err => {
+                                        throw new Error(err.error || 'An error occurred');
+                                    });
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                Swal.fire(
+                                    'Deleted!',
+                                    data.message, // Success message from your API
+                                    'success'
+                                ).then(() => {
+                                    location.reload(); // Reload the page to see the changes
+                                });
+                            })
+                            .catch(error => {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: error.message || 'An error occurred while deleting the category',
+                                });
+                            });
+                    }
+                });
+            }
+
+        </script>
+        <%- include("../../views/partials/admin/footer") %>

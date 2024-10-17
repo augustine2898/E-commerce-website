@@ -1,0 +1,167 @@
+<%- include("../../views/partials/admin/header") %>
+<style>
+    /* Styling for header and general layout */
+    .content-header {
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+    }
+    
+    /* Styling for card and table */
+    .card {
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+    
+    /* Table Header */
+    .table thead th {
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        background-color: #f1f1f1;
+    }
+    
+    /* Pagination */
+    .pagination .page-link {
+        color: #333;
+    }
+
+    .pagination .page-link:hover {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background-color: #007bff;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+    }
+
+    /* Responsive Search Bar */
+    .search-bar {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        border-radius: 30px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 8px;
+        margin: 0 auto;
+        max-width: 500px;
+        margin-bottom: 20px;
+    }
+
+    .search-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 10px 15px;
+        border-radius: 30px 0 0 30px;
+    }
+
+    .btn-search {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 0 30px 30px 0;
+        padding: 10px 20px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        cursor: pointer;
+    }
+
+    .btn-search:hover {
+        background-color: #0056b3;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .search-bar {
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        .search-input, .btn-search {
+            width: 100%;
+            border-radius: 30px;
+        }
+
+        .btn-search {
+            margin-top: 10px;
+        }
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="content-header row">
+        <h2 class="content-title card-title text-center">Customers</h2>
+    </div>
+
+    <!-- Search Bar -->
+    <header class="card-header text-center mb-4">
+        <form action="/admin/users/" method="get" class="search-bar">
+            <input type="text" class="form-control search-input" placeholder="Search customers..." name="search" aria-label="Search customers">
+            <button class="btn btn-search" type="submit">Search</button>
+        </form>
+    </header>
+
+    <!-- Customers Table -->
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone No</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% data.forEach((customer) => { %>
+                        <tr>
+                            <td><%= customer.name %></td>
+                            <td><%= customer.email %></td>
+                            <td><%= customer.phone %></td>
+                            <td class="text-center">
+                                <% if(!customer.isBlocked) { %>
+                                    <button class="btn btn-danger btn-sm">
+                                        <a href="/admin/blockCustomer?id=<%= customer._id %>" class="text-white">Block</a>
+                                    </button>
+                                <% } else { %>
+                                    <button class="btn btn-success btn-sm">
+                                        <a href="/admin/unblockCustomer?id=<%= customer._id %>" class="text-white">Unblock</a>
+                                    </button>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-container mt-4">
+        <ul class="pagination justify-content-center">
+            <% for(let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+            <% } %>
+        </ul>
+    </div>
+</div>
+<%- include("../../views/partials/admin/footer") %>
