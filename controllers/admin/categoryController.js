@@ -2,6 +2,8 @@ const Category = require("../../models/CategorySchema");
 const Product = require("../../models/productSchema");
 
 
+
+
 const categoryInfo = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;

@@ -7,10 +7,8 @@ const customerinfo = async (req, res) => {
         if (req.query.search) {
             search = req.query.search;
         }
-        let page = 1;
-        if (req.query.page) {
-            page = req.query.page
-        }
+        let page = parseInt(req.query.page) || 1;
+
         const limit = 3
         const userData = await User.find({
             isAdmin: false,
@@ -43,8 +41,10 @@ const customerinfo = async (req, res) => {
 const customerBlocked= async(req,res)=>{
     try {
         let id = req.query.id;
+        let page = req.query.page || 1;
+        console.log(req.query.page)
         await User.updateOne({_id:id},{$set:{isBlocked:true}});
-        res.redirect("/admin/users");
+        res.redirect(`/admin/users?page=${page}`);
     } catch (error) {
         res.redirect("/pageerror");
     }
@@ -53,8 +53,10 @@ const customerBlocked= async(req,res)=>{
 const customerUnblocked= async(req,res)=>{
     try {
         let id = req.query.id;
+        let page = req.query.page || 1;
+        console.log(page)
         await User.updateOne({_id:id},{$set:{isBlocked:false}});
-        res.redirect("/admin/users");
+        res.redirect(`/admin/users?page=${page}`);
     } catch (error) {
         res.redirect("/pageerror");
     }
