@@ -1,0 +1,343 @@
+<%- include("../../views/partials/user/header") %>
+
+    <!-- Start Hero Section -->
+    <div class="hero">
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-lg-5">
+                    <div class="intro-excerpt">
+                        <h1>Shop</h1>
+                    </div>
+                </div>
+                <div class="col-lg-7"></div>
+            </div>
+        </div>
+    </div>
+    <!-- End Hero Section -->
+    <div class="container">
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-3">
+                <label for="sort" class="form-label">Sort by:</label>
+                <select id="sort" class="form-select">
+                    <option value="">Default</option>
+                    <option value="priceAsc">Price: Low to High</option>
+                    <option value="priceDesc">Price: High to Low</option>
+                </select>
+            </div>
+            <div class="col-md-3 offset-md-6 text-end"> <!-- Adjusted for spacing and alignment -->
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filter</button>
+            </div>
+
+            <!-- Modal for filters -->
+            <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="filterModalLabel">Filter Products</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="filterForm" action="/shop" method="GET">
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">Category</label>
+                                    <select class="form-select" name="category">
+                                        <option value="">All Categories</option> <!-- Default option -->
+                                        <% for (let i=0; i < cat.length; i++) { %>
+                                            <option value="<%= cat[i]._id %>">
+                                                <%= cat[i].name %>
+                                            </option>
+                                            <% } %>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="priceRange" class="form-label">Price Range</label>
+                                    <input type="number" class="form-control" name="minPrice" placeholder="Min Price">
+                                    <input type="number" class="form-control mt-2" name="maxPrice"
+                                        placeholder="Max Price">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="color" class="form-label">Color</label>
+                                    <input type="text" class="form-control" name="color" placeholder="Color">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select class="form-select" name="status">
+                                        <option value="">Any Status</option>
+                                        <option value="Available">Available</option>
+                                        <option value="out of stock">Out of stock</option>
+                                        <option value="Discontinued">Discontinued</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="untree_co-section product-section before-footer-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2 class="mb-4 section-title text-center">Our Products</h2> <!-- Title for new arrivals -->
+                </div>
+            </div>
+
+            <div class="row product__filter">
+                <% for (let i=0; i < products.length; i++) { %>
+                    <div class="col-12 col-md-4 col-lg-3 mb-5">
+                        <div class="product-card"><a href="/productDetails?id=<%= products[i]._id %>">
+                            <img src="/uploads/product-image/<%= products[i].productImage[0] %>"
+                                alt="<%= products[i].productName %>" class="product-image" /></a>
+
+                            <div class="product-info">
+                                <h3>
+                                    <%= products[i].productName %>
+                                </h3>
+                                <!-- <div class="product-size">Sizes: <%= products[i].size || 'N/A' %>
+                                </div> -->
+
+                                <div class="price-section">
+                                    <% if (products[i].salePrice && products[i].regularPrice> products[i].salePrice) {
+                                        %>
+                                        <span class="original-price">₹<%= products[i].regularPrice %></span>
+                                        <span class="discounted-price">₹<%= products[i].salePrice %></span>
+                                        <span class="discount-percentage">(<%= ((products[i].regularPrice -
+                                                products[i].salePrice) / products[i].regularPrice * 100).toFixed(0) %> %
+                                                OFF)</span>
+
+                                        <% } else { %>
+                                            <span class="regular-price fw-bold ">₹<%= products[i].regularPrice %></span>
+                                            <% } %>
+                                </div>
+
+
+
+
+                                <div class="button-group">
+                                    <button class="cart-btn" data-id="<%= products[i]._id %>">Add to Cart </button>
+                                    <button class="wishlist-btn" data-id="<%= products[i]._id %>"
+                                        data-filled="false">Add to Wishlist</button>
+
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+            </div>
+
+
+
+        </div>
+    </div>
+
+    <%- include("../../views/partials/user/footer") %>
+
+        <script>
+            document.getElementById('filterBtn').addEventListener('click', function () {
+                const sort = document.getElementById('sort').value;
+                const priceMin = document.getElementById('priceMin').value;
+                const priceMax = document.getElementById('priceMax').value;
+                const category = document.getElementById('category').value;
+
+                // Build query parameters
+                let query = `?sort=${sort}&priceMin=${priceMin}&priceMax=${priceMax}&category=${category}`;
+
+                // Redirect to the same page with query parameters
+                window.location.href = `/shop${query}`;
+            });
+
+            // Event listeners for add to cart and wishlist buttons
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function () {
+                    const productId = this.getAttribute('data-id');
+                    alert(`Product ${productId} added to cart!`);
+                });
+            });
+
+            document.querySelectorAll('.wish-list').forEach(icon => {
+                icon.addEventListener('click', function () {
+                    const productId = this.getAttribute('data-id');
+                    const isFilled = this.getAttribute('data-filled') === 'true';
+
+                    // Toggle wishlist state
+                    if (isFilled) {
+                        this.classList.remove('fa-solid', 'text-danger'); // Remove solid and red color
+                        this.classList.add('fa-regular'); // Change to outline heart
+                        this.setAttribute('data-filled', 'false');
+                        alert(`Product ${productId} removed from wishlist!`);
+                    } else {
+                        this.classList.remove('fa-regular'); // Change to filled heart
+                        this.classList.add('fa-solid', 'text-danger'); // Add solid and red color
+                        this.setAttribute('data-filled', 'true');
+                        alert(`Product ${productId} added to wishlist!`);
+                    }
+                });
+            });
+
+
+            document.querySelectorAll('.add-to-wishlist').forEach(button => {
+                button.addEventListener('click', function () {
+                    const productId = this.getAttribute('data-id');
+                    const isInWishlist = this.getAttribute('data-filled') === 'true';
+
+                    if (isInWishlist) {
+                        // If it's already in the wishlist, remove it
+                        this.innerText = 'Add to Wishlist'; // Change text back
+                        this.setAttribute('data-filled', 'false'); // Update the filled state
+                        alert(`Product ${productId} removed from wishlist!`);
+                        // Here you would typically send a request to your server to remove the product from the user's wishlist.
+                    } else {
+                        // If it's not in the wishlist, add it
+                        this.innerText = 'Remove from Wishlist'; // Change text to indicate removal
+                        this.setAttribute('data-filled', 'true'); // Update the filled state
+                        alert(`Product ${productId} added to wishlist!`);
+                        // Here you would typically send a request to your server to add the product to the user's wishlist.
+                    }
+                });
+            });
+
+        </script>
+
+        <style>
+            .product-card {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                min-height: 400px;
+                /* Ensuring all cards are uniform in height */
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                overflow: hidden;
+                background-color: #fff;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+            }
+
+            .product-image {
+                max-height: 200px;
+                /* Ensure image consistency */
+                width: 100%;
+                object-fit: cover;
+            }
+
+            .product-info {
+                padding: 15px;
+            }
+
+            h3 {
+                font-size: 18px;
+                margin: 10px 0;
+                color: #333;
+                text-align: center;
+            }
+
+            .product-size {
+                font-size: 14px;
+                color: #666;
+                text-align: center;
+            }
+
+            .price-section {
+                margin-top: 10px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .discounted-price {
+                font-size: 16px;
+                color: #d9534f;
+                font-weight: bold;
+                padding: 4px;
+            }
+
+            .discount-percentage {
+                font-weight: bold;
+                color: green;
+                margin-left: 10px;
+            }
+
+            .original-price {
+                text-decoration: line-through;
+                margin-left: 10px;
+                color: #888;
+            }
+
+            .regular-price {
+
+
+                margin-left: 10px;
+                color: #000000;
+            }
+
+            .discount {
+                font-size: 14px;
+                color: #5cb85c;
+                margin-left: 5px;
+            }
+
+            .wishlist-btn {
+                margin-top: auto;
+                /* Ensure button stays at the bottom */
+                padding: 8px 16px;
+                font-size: 14px;
+                background-color: #3b5d50;
+                border: none;
+                border-radius: 5px;
+                color: #fff;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+                align-self: center;
+                /* Center the button */
+            }
+
+            .cart-btn {
+                margin-top: auto;
+                /* Ensure button stays at the bottom */
+                padding: 8px 26px;
+                font-size: 14px;
+                background-color: #0275d8;
+                border: none;
+                border-radius: 5px;
+                color: #fff;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+                align-self: center;
+                /* Center the button */
+            }
+
+            .wishlist-btn:hover,
+            .cart-btn:hover {
+                background-color: #025aa5;
+            }
+
+            /* Media queries for smaller screens */
+            @media (max-width: 600px) {
+                .product-card {
+                    max-width: 100%;
+                }
+
+                h3 {
+                    font-size: 16px;
+                }
+
+                .price-section {
+                    flex-direction: column;
+                }
+
+                .original-price,
+                .discount {
+                    margin-left: 0;
+                }
+            }
+        </style>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">

@@ -1,106 +1,10 @@
 <%- include("../../views/partials/admin/header") %>
 <style>
-    /* Styling for header and general layout */
-    .content-header {
-        border-bottom: 1px solid #ddd;
-        padding-bottom: 10px;
-    }
-    
-    /* Styling for card and table */
-    .card {
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-    }
+    /* ... [Your existing CSS styles here] ... */
 
-    .table-hover tbody tr:hover {
-        background-color: #f9f9f9;
-    }
-    
-    /* Table Header */
-    .table thead th {
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        background-color: #f1f1f1;
-    }
-    
-    /* Pagination */
-    .pagination .page-link {
-        color: #333;
-    }
-
-    .pagination .page-link:hover {
-        background-color: #007bff;
-        color: #fff;
-    }
-
-    /* Buttons */
-    .btn-primary {
-        background-color: #007bff;
-    }
-
-    .btn-danger {
-        background-color: #dc3545;
-    }
-
-    .btn-success {
-        background-color: #28a745;
-    }
-
-    /* Responsive Search Bar */
-    .search-bar {
-        display: flex;
-        align-items: center;
-        background-color: white;
-        border-radius: 30px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        padding: 8px;
-        margin: 0 auto;
-        max-width: 500px;
-        margin-bottom: 20px;
-    }
-
-    .search-input {
-        flex: 1;
-        border: none;
-        outline: none;
-        padding: 10px 15px;
-        border-radius: 30px 0 0 30px;
-    }
-
-    .btn-search {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        border-radius: 0 30px 30px 0;
-        padding: 10px 20px;
-        transition: background-color 0.3s ease, transform 0.2s ease;
-        cursor: pointer;
-    }
-
-    .btn-search:hover {
-        background-color: #0056b3;
-    }
-
-    /* Responsive styles */
-    @media (max-width: 768px) {
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        .search-bar {
-            flex-direction: column;
-            padding: 10px;
-        }
-
-        .search-input, .btn-search {
-            width: 100%;
-            border-radius: 30px;
-        }
-
-        .btn-search {
-            margin-top: 10px;
-        }
+    /* Additional styles for filter dropdown */
+    .filter-dropdown {
+        margin-left: 10px;
     }
 </style>
 
@@ -109,10 +13,28 @@
         <h2 class="content-title card-title text-center">Customers</h2>
     </div>
 
-    <!-- Search Bar -->
+    <!-- Search Bar, Filter, and Sort -->
     <header class="card-header text-center mb-4">
-        <form action="/admin/users/" method="get" class="search-bar">
-            <input type="text" class="form-control search-input" placeholder="Search customers..." name="search" aria-label="Search customers">
+        <form action="/admin/users/" method="get" class="search-bar d-inline-flex">
+            <input type="text" class="form-control search-input" placeholder="Search customers..." name="search" aria-label="Search customers" value="<%= search %>">
+            
+            <select name="status" class="form-select filter-dropdown" aria-label="Filter by Status">
+                <option value="">All Statuses</option>
+                <option value="active" <%= status === 'active' ? 'selected' : '' %>>Active</option>
+                <option value="blocked" <%= status === 'blocked' ? 'selected' : '' %>>Blocked</option>
+            </select>
+
+            <select name="sort" class="form-select sort-dropdown" aria-label="Sort by">
+                <option value="">Sort By</option>
+                <option value="name" <%= sort === 'name' ? 'selected' : '' %>>Name</option>
+                <option value="email" <%= sort === 'email' ? 'selected' : '' %>>Email</option>
+            </select>
+
+            <select name="order" class="form-select sort-direction" aria-label="Sort Direction">
+                <option value="asc" <%= order === 'asc' ? 'selected' : '' %>>Ascending</option>
+                <option value="desc" <%= order === 'desc' ? 'selected' : '' %>>Descending</option>
+            </select>
+
             <button class="btn btn-search" type="submit">Search</button>
         </form>
     </header>
@@ -158,7 +80,7 @@
         <ul class="pagination justify-content-center">
             <% for(let i = 1; i <= totalPages; i++) { %>
                 <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
-                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                    <a class="page-link" href="?page=<%= i %>&search=<%= search %>&status=<%= status %>&sort=<%= sort %>&order=<%= order %>"><%= i %></a>
                 </li>
             <% } %>
         </ul>

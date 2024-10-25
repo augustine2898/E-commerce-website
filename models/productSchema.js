@@ -33,9 +33,9 @@ const productSchema = new Schema({
     },
     quantity: {
         type: Number,
-        defaultl: true
+        default: true
     },
-    colour: {
+    color: {
         type: String,
         required: true
     },
@@ -53,6 +53,10 @@ const productSchema = new Schema({
         required: true,
         default: "Available",
     },
+    reviews: [{ // Add this line to store references to reviews
+        type: Schema.Types.ObjectId,
+        ref: "Review"
+    }],
 
 }, { timestamps: true });
 

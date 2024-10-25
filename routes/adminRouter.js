@@ -10,6 +10,7 @@ const storage =require("../helpers/multer");
 const uploads = multer ({storage:storage});
 
 router.get("/pageerror", adminController.pageerror);
+router.get("/page404", adminController.page404);
 //Login Management 
 router.get("/login", adminController.loadLogin);
 router.post("/login", adminController.login);
@@ -33,9 +34,18 @@ router.get("/editCategory", adminAuth, categoryController.getEditCategory);
 router.post("/editCategory/:id", adminAuth, categoryController.editCategory);
 
 
+
 //Product Management 
 router.get("/addProducts", adminAuth, productController.getProductAddPage);
 router.post("/addProducts",adminAuth,uploads.array("image",4),productController.addProducts)
-
+router.get("/products",adminAuth,productController.getAllproducts);
+router.post("/addProductOffer",adminAuth,productController.addProductOffer);
+router.post("/removeProductOffer",adminAuth,productController.removeProductOffer);
+router.get("/blockProduct",adminAuth,productController.blockProduct);
+router.get("/unblockProduct",adminAuth,productController.unblockProduct);
+router.get("/editProduct",adminAuth,productController.getEditproduct)
+router.post("/editProduct/:id",adminAuth,uploads.array("images",4),productController.editProduct);
+router.post("/deleteImage",adminAuth,productController.deleteSingleImage)
+router.delete("/removeProduct/:id", adminAuth, productController.removeProduct);
 
 module.exports = router

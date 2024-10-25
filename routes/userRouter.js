@@ -19,7 +19,7 @@ router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 
 router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/signup' }), async (req, res) => {
     const user = await User.findById(req.user._id);
     if (user && user.isBlocked) {
-        req.logout(() => { }); // Logs the user out
+        req.logout(() => { }); 
         res.redirect('/blocked'); // Redirect to a page indicating they are blocked
     } else {
         req.session.user = req.user._id;
@@ -33,9 +33,19 @@ router.get('/blocked', (req, res) => {
 
 router.get("/login", userController.loadLogin);
 router.post("/login", userController.login)
+router.get("/logout", userController.logout);
 
 
 //Home Page & Shopping page
 router.get("/", userController.loadHomepage);
-router.get("/logout", userController.logout);
+router.get("/productsview", userController.getAllproducts);
+router.get("/productDetails/", userController.loadProductPage);
+router.post("/productDetails/review/:id", userController.submitReview);
+router.post('/deleteReview/:reviewId', userController.deleteReview);
+
+
+
+
+
+
 module.exports = router;

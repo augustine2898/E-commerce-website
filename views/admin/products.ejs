@@ -1,0 +1,359 @@
+<%- include("../../views/partials/admin/header") %>
+
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+        <style>
+            /* General styling */
+            body {
+                font-family: Arial, sans-serif;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            /* Form styling */
+            .form-group {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 15px;
+            }
+
+            .form-label {
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+
+            .form-control {
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            /* Responsive grid layout */
+            .row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+
+            .col-md-3,
+            .col-md-8 {
+                flex: 1;
+                min-width: 100%;
+                max-width: 100%;
+            }
+
+            @media (min-width: 768px) {
+                .col-md-3 {
+                    max-width: 25%;
+                }
+
+                .col-md-8 {
+                    max-width: 70%;
+                }
+            }
+
+            /* Button styling */
+            .btn-primary {
+                background-color: #007bff;
+                color: #fff;
+                border: none;
+                padding: 10px;
+                border-radius: 5px;
+                transition: background-color 0.3s;
+            }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+            }
+
+            /* Table styling */
+            .table-responsive {
+                overflow-x: auto;
+            }
+
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .table th,
+            .table td {
+                padding: 15px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+
+            /* Pagination */
+            .pagination-container {
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
+            }
+
+            .pagination a,
+            .pagination .current-page {
+                margin: 0 5px;
+                padding: 8px 12px;
+                text-decoration: none;
+                border-radius: 5px;
+                border: 1px solid #ddd;
+            }
+
+            .pagination a:hover {
+                background-color: #f0f0f0;
+            }
+
+            /* Error message */
+            .error-message {
+                color: red;
+                font-size: 0.9em;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+
+            .btn-info {
+                background-color: #007bff;
+                /* Match primary color */
+                color: #fff;
+                border: none;
+            }
+
+            .btn-info:hover {
+                background-color: #0056b3;
+            }
+
+            .btn.btn-secondary {
+                background-color: #6c757d;
+                /* Match secondary button color */
+                color: #fff;
+                border: none;
+                padding: 8px 20px;
+            }
+
+            .btn-secondary:hover {
+                background-color: #5a6268;
+            }
+
+            .btn-danger {
+                background-color: #dc3545;
+                /* Match danger color */
+                color: #fff;
+                border: none;
+            }
+
+            .btn-danger:hover {
+                background-color: #c82333;
+            }
+
+            .btn-success {
+                background-color: #28a745;
+                /* Match success color */
+                color: #fff;
+                border: none;
+            }
+
+            .btn-success:hover {
+                background-color: #218838;
+            }
+        </style>
+    </head>
+
+    <div class="content-header text-center">
+        <h2 class="content-title card-title">Products</h2>
+    </div>
+
+    <header class="card-header text-center mb-20">
+        <form action="/admin/products/" method="get" class="d-inline">
+            <div class="input-group" style="width: 300px; margin: 10px auto;">
+                <input type="text" class="form-control" placeholder="Search" name="search" value="<%=search%>" />
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
+    </header>
+
+    <div class="right mt-5">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col"><b>Product Name</b></th>
+                        <th scope="col"><b>Category</b></th>
+                        <th scope="col"><b>Sale Price</b></th>
+                        <th scope="col"><b>Offer Percentage</b></th>
+                        <th scope="col"><b>Offer</b></th>
+                        <th scope="col"><b>Quantity</b></th>
+                        <th scope="col"><b>Action</b></th>
+                        <th scope="col"><b>Edit/Remov</b></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (let i=data.length - 1; i>= 0; i--) { %>
+                        <tr>
+                            <td>
+                                <%= data[i].productName %>
+                            </td>
+                            <td>
+                                <%= data[i].category ? data[i].category.name : 'No Category' %>
+                            </td>
+                            <td>
+                                <%= data[i].salePrice %>
+                            </td>
+                            <td>
+                                <%= data[i].productOffer ? data[i].productOffer + '%' : '0%' %>
+                            </td>
+                            <td>
+                                <% if (data[i].productOffer===0) { %>
+                                    <button class="btn btn-info" onclick="addOffer('<%= data[i]._id %>')"
+                                        style="width: 100px;">
+                                        <a href="#" class="text-white">Add Offer</a>
+                                    </button>
+                                    <% } else { %>
+                                        <button class="btn btn-info" onclick="removeOffer('<%= data[i]._id %>')"
+                                            style="width: 100px;">
+                                            <a href="#" class="text-white">Remove</a>
+                                        </button>
+                                        <% } %>
+                            </td>
+                            <td>
+                                <%= data[i].quantity %>
+                            </td>
+                            <td>
+                                <button class="btn <%= data[i].isBlocked === false ? 'btn-danger' : 'btn-success' %>"
+                                    style="width: 80px;">
+                                    <a href="<%= data[i].isBlocked === false ? '/admin/blockProduct?id=' + data[i]._id : '/admin/unblockProduct?id=' + data[i]._id %>"
+                                        class="text-white" style="text-decoration: none;">
+                                        <%= data[i].isBlocked===false ? 'Block' : 'Unblock' %>
+                                    </a>
+                                </button>
+                            </td>
+                            <td>
+                                <button class="btn btn-info" style="width: 80px;">
+                                    <a href="/admin/editProduct?id=<%= data[i]._id %>" class="text-white"
+                                        style="text-decoration: none;">Edit</a>
+                                </button>
+                                <a href="javascript:void(0)" onclick="deleteProduct('<%=data[i]._id %>')">
+                                    <i class="bi bi-trash" style="font-size: 1.25em; margin-left: 10px;"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="container mt-3">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mb-20">
+                <% for (let i=1; i <=totalPages; i++) { %>
+                    <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                        <a class="page-link" href="?page=<%= i %>">
+                            <%= i %>
+                        </a>
+                    </li>
+                    <% } %>
+            </ul>
+        </nav>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        async function addOffer(productId) {
+            const { value: amount } = await Swal.fire({
+                title: 'Offer in percentage',
+                input: 'number',
+                inputLabel: 'Percentage',
+                inputPlaceholder: '%'
+            });
+
+            $.ajax({
+                url: "/admin/addProductOffer",
+                method: 'POST',
+                data: {
+                    percentage: amount,
+                    productId: productId
+                },
+                success: (response) => {
+                    if (response.status === true) {
+                        location.reload();
+                        Swal.fire('Offer added', 'The offer has been added', 'success');
+                    } else {
+                        alert('Failed to add offer');
+                    }
+                }
+            });
+        }
+
+        function removeOffer(productId) {
+            Swal.fire({
+                title: 'Remove Offer',
+                text: 'Are you sure you want to remove this Offer?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: 'd33',
+                confirmButtonText: 'Yes, remove it!',
+                timer: 5000,
+                timerProgressBar: true
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "/admin/removeProductOffer",
+                        method: 'POST',
+                        data: {
+                            productId: productId
+                        },
+                        success: (response) => {
+                            if (response.status === true) {
+                                Swal.fire("Removed!", 'The offer has been removed', 'success');
+                                location.reload();
+                            } else {
+                                Swal.fire('Failed to remove offer');
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function deleteProduct(productId) {
+            Swal.fire({
+                title: 'Delete Product',
+                text: 'Are you sure you want to delete this product?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "/admin/deleteProduct",
+                        method: 'POST',
+                        data: {
+                            productId: productId
+                        },
+                        success: (response) => {
+                            if (response.status === true) {
+                                Swal.fire("Deleted!", 'The product has been deleted', 'success');
+                                location.reload();
+                            } else {
+                                Swal.fire('Failed to delete product');
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+    <%- include("../../views/partials/admin/footer") %>

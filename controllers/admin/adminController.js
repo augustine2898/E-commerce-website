@@ -7,6 +7,10 @@ const pageerror =async(req,res)=>{
     res.render("admin-error")
 }
 
+const page404 =async(req,res)=>{
+    res.render("pagenotfound");
+}
+
 const loadLogin =(req,res)=>{
     if(req.session.admin){
         return res.redirect("/admin/dashboard")
@@ -67,4 +71,5 @@ module.exports ={
     loadDashboard,
     pageerror,
     logout,
+    page404,
 }
