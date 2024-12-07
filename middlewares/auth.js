@@ -1,23 +1,39 @@
 const User =require("../models/userSchema");
 
-const userAuth =(req,res,next)=>{
-    if(req.session.user){
-        User.findById(req.session.User)
-        .then(data=>{
-            if(data && !data.isBlocked){
-                next();
-            }else{
-                res.redirect("/login")
+const userAuth = async (req, res, next) => {
+    try {
+        if (req.session.user) {
+            const user = await User.findById(req.session.user); // Ensure correct property (user ID) is checked
+
+            if (user) {
+                if (user.isBlocked) {
+                    // If the user is blocked, destroy the session, clear the cookie, and redirect
+                    req.session.destroy((err) => {
+                        if (err) {
+                            console.error('Session destroy error:', err);
+                            return res.redirect("/pageNotFound"); // Redirect to an error or page-not-found route
+                        }
+                        res.clearCookie('connect.sid'); // Clear the session cookie
+                        res.redirect("/blocked"); // Redirect to a custom blocked page
+                    });
+                } else {
+                    // User is authenticated and not blocked, proceed to the route
+                    next();
+                }
+            } else {
+                // User not found, redirect to login
+                res.redirect("/login");
             }
-        })
-        .catch(error=>{
-            console.log("Error in user auth middleware");
-            res.status(500).send("Internal server error")
-        })
-    }else{
-        res.redirect("/login")
+        } else {
+            // No user in session, redirect to login
+            res.redirect("/login");
+        }
+    } catch (error) {
+        console.error("Error in user auth middleware:", error);
+        res.status(500).send("Internal server error");
     }
-}
+};
+
 
 const adminAuth =(req,res,next)=>{
     User.findOne({isAdmin:true})

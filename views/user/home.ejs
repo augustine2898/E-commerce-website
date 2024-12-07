@@ -162,11 +162,11 @@ h3 {
 	padding: 4px;
 }
 
-.discount {
-	font-size: 14px;
-	color: #5cb85c;
-	margin-left: 5px;
-}
+.discount-percentage {
+                font-weight: bold;
+                color: green;
+                margin-left: 10px;
+            }
 
 .cart-btn {
 	margin-top: auto;
@@ -221,14 +221,14 @@ h3 {
 				<div class="col-lg-5">
 					<div class="intro-excerpt">
 						<h1>
-							Discover Timeless Designs <span class="d-block">and Modern Comfort</span>
+							Discover Timeless Designs<span class="d-block">and Modern Comfort</span>
 						</h1>
 						<p class="mb-4">
 							Quality Craftsmanship, Luxurious Comfort, Unbeatable Prices
 						</p>
 						<p>
-							<a href="" class="btn btn-secondary me-2">Shop Now</a>
-							<a href="#" class="btn btn-white-outline">Explore</a>
+							<a href="/shop" class="btn btn-secondary me-2">Shop Now</a>
+							<!-- <a href="#" class="btn btn-white-outline">Explore</a> -->
 						</p>
 					</div>
 				</div>
@@ -242,119 +242,72 @@ h3 {
 	</div>
 	<!-- End Hero Section -->
 
-	<!-- Start Product Section -->
-	<div class="product-section">
-		<div class="container">
-			<div class="row">
-				<!-- Start Column 1 -->
-				<div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
-					<h2 class="mb-4 section-title">Crafted with excellent material.</h2>
-					<p class="mb-4"></p>
-					<p><a href="/shop" class="btn">Explore</a></p>
-				</div>
-				<!-- End Column 1 -->
-
-				<!-- <section class="product spad">
-					<div class="container">
-						<div class="row">
-							<div class="col-lg-12">
-								<h2 class="mb-4 section-title">Our Products</h2>
-							</div>
-						</div>
-
-						<div class="row product__filter">
-							<% for (let i=0; i < products.length; i++) { %>
-								<div class="col-lg-3 col-md-4 col-12 col-sm-6">
-									<div class="product-cart-wrap mb-30">
-										<div class="product-img-action-wrap">
-											<div class="product-img product-img-zoom">
-												<a href="/productDetails?id=<%= products[i]._id %>">
-													<img class="default-img"
-														src="/uploads/product-image/<%= products[i].productImage[0] %>"
-														alt="<%= products[i].productName %>">
-												</a>
-											</div>
-											<a href="" class="wishlist-btn">
-												<i class="fas fa-heart"></i>
-											</a>
-										</div>
-										<div class="product-action-1">
-											<a aria-label="Add to Wishlist" class="action-btn hover-up"
-												href="/addToWishlist/id=<%= products[i]._id %>"></a>
-										</div>
-
-										<div class="product-content-wrap">
-											<h6>
-												<%= products[i].productName %>
-											</h6>
-											<h5>
-												<%= products[i].salePrice %>
-											</h5>
-											<a href="/addToCart?id=<%= products[i]._id %>">Add to cart</a>
-										</div>
-									</div>
-								</div>
-								<% } %>
-						</div>
-					</div>
-				</section> -->
-			</div>
-		</div>
-	</div>
 	
-	<!-- End Product Section -->
+	
+	
+	<!-- Start Product Section -->
+<div class="product-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
+                <h2 class="mb-4 section-title">Crafted with excellent material.</h2>
+                <p class="mb-4"></p>
+                <p><a href="/shop" class="btn">Explore</a></p>
+            </div>
 
-	<div class="container">
-		<div class="row">
-		  <div class="col-lg-12">
-			<h2 class="mb-4 section-title text-center">Our Products</h2> <!-- Title for new arrivals -->
-		  </div>
-		</div>
-	  
-		<div class="row product__filter">
-		  <% for (let i = 0; i < products.length; i++) { %>
-		  <div class="col-12 col-md-4 col-lg-3 mb-5">
-			<div class="product-card">
-			  <!-- Product Image Section -->
-			  <div class="product-img-action-wrap">
-				<a href="/productDetails?id=<%= products[i]._id %>">
-				  <img class="product-image" src="/uploads/product-image/<%= products[i].productImage[0] %>"
-					alt="<%= products[i].productName %>">
-				</a>
-			  </div>
-	  
-			  <!-- Product Information Section -->
-			  <div class="product-info">
-				<h3><%= products[i].productName %></h3>
-	  
-				<div class="price-section">
-				  <% if (products[i].salePrice && products[i].regularPrice > products[i].salePrice) { %>
-				  <span class="original-price">Rs. <%= products[i].regularPrice %></span>
-				  <span class="discounted-price">Rs. <%= products[i].salePrice %></span>
-				  <% if (products[i].discountPercentage) { %>
-				  <span class="discount">(<%= products[i].discountPercentage %>% OFF)</span>
-				  <% } %>
-				  <% } else { %>
-				  <span class="regular-price fw-bold">Rs. <%= products[i].regularPrice %></span>
-				  <% } %>
-				</div>
-	  
-				<!-- Buttons Section -->
-				<div class="button-section">
-				  <!-- Add to Cart Button -->
-				  <button class="cart-btn" data-id="<%= products[i]._id %>">Add to Cart</button>
-	  
-				  <!-- Add to Wishlist Button -->
-				  <button class="wishlist-btn" data-id="<%= products[i]._id %>">
-					Add to Wishlist
-				  </button>
-				</div>
-			  </div>
-			</div>
-		  </div>
-		  <% } %>
-		</div>
-	  </div>
+            <div class="col-lg-12">
+                <h2 class="mb-4 section-title text-center">Our Products</h2> 
+            </div>
+        </div>
+        
+        <div class="row product__filter">
+            <% for (let i = 0; i < products.length; i++) { %>
+            <div class="col-6 col-sm-4 col-md-3 mb-4"> 
+                <div class="product-card">
+                   
+                    <div class="product-img-action-wrap">
+                        <a href="/productDetails?id=<%= products[i]._id %>">
+                            <img class="product-image" src="/uploads/product-image/<%= products[i].productImage[0] %>"
+                                alt="<%= products[i].productName %>">
+                        </a>
+                    </div>
+
+                    
+                    <div class="product-info">
+                        <h3><%= products[i].productName %></h3>
+
+                        <div class="price-section">
+							<% if (products[i].salePrice && products[i].regularPrice> products[i].salePrice) {
+								%>
+								<span class="original-price">₹<%= products[i].regularPrice %></span>
+								<span class="discounted-price">₹<%= products[i].salePrice %></span>
+								<span class="discount-percentage">(<%= ((products[i].regularPrice -
+										products[i].salePrice) / products[i].regularPrice * 100).toFixed(0) %> %
+										OFF)</span>
+
+								<% } else { %>
+									<span class="regular-price fw-bold ">₹<%= products[i].regularPrice %></span>
+									<% } %>
+						</div>
+
+                        
+                        <div class="button-section">
+                           
+                            <button class="cart-btn" data-product-id="<%= products[i]._id %>">Add to Cart</button>
+
+                            
+                            <button class="wishlist-btn" data-id="<%= products[i]._id %>">
+                                Add to Wishlist
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
 	  
 
 	<!-- Start Why Choose Us Section -->
@@ -482,5 +435,33 @@ h3 {
 		</div>
 	</div>
 	<!-- End Blog Section -->
-
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<%- include("../partials/user/footer") %>
+	<script>
+		document.querySelectorAll('.cart-btn').forEach(button => {
+	button.addEventListener('click', async (event) => {
+		const productId = event.target.getAttribute('data-product-id');
+		const quantity = 1; // You can change this value based on the input field for quantity, if applicable
+
+		try {
+			const response = await fetch('/cart/add/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ productId, quantity }), // Send quantity here
+			});
+			const data = await response.json();
+			if (data.message === 'Product added to cart') {
+				Swal.fire('Success', data.message, 'success');
+			} else {
+				Swal.fire('Error', data.message || 'Something went wrong. Please try again.', 'error');
+			}
+		} catch (error) {
+			console.error('Error:', error);
+			Swal.fire('Error', 'Failed to add product to cart. Please try again.', 'error');
+		}
+	});
+});
+
+	</script>

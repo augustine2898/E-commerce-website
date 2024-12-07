@@ -1,0 +1,337 @@
+<%- include("../partials/user/header") %>
+<form id="orderForm" action="/checkout/place-order" method="POST">
+    <div class="untree_co-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mb-5 mb-md-0">
+                    <h2 class="h3 mb-3 text-black">Billing Details</h2>
+                    <div class="p-3 p-lg-5 border bg-white">
+                        <!-- Existing Address Selection -->
+                        <div class="form-group">
+                            <label for="c_select_address" class="text-black">Select Existing Address</label>
+                            <div class="d-flex align-items-center">
+                                <!-- Dropdown for selecting address -->
+                                <select id="c_select_address" name="c_select_address" class="form-control me-2" required onchange="updateEditLink()">
+                                    <option value="">Select an address</option>
+                                    <% addresses.forEach(function(address) { %>
+                                        <% address.address.forEach(function(addr) { %>
+                                            <option value="<%= address._id %>">
+                                                <%= addr.addressDetail %>, <%= addr.city %>, <%= addr.state %> - <%= addr.pincode %>
+                                            </option>
+                                        <% }) %>
+                                    <% }) %>
+                                </select>
+                        
+                                <!-- Edit button for the selected address -->
+                                <a href="#" id="edit-address-link" class="btn-small" onclick="handleEditClick(event)">Edit</a>
+                            </div>
+                        </div>
+                        
+                        
+
+                        <!-- Checkbox to Ship To A Different Address -->
+                        <!-- <div class="form-group">
+                            <label for="c_ship_different_address" class="text-black">
+                                <input type="checkbox" value="1" id="c_ship_different_address"
+                                    onclick="toggleNewAddressForm()">
+                                Ship To A Different Address?
+                            </label>
+                        </div>
+
+                        
+                        <div id="new_address_form" style="display: none;">
+                            <div class="form-group">
+                                <label for="c_diff_country" class="text-black">Country <span
+                                        class="text-danger">*</span></label>
+                                <select id="c_diff_country" name="c_diff_country" class="form-control">
+                                    <option value="1">Select a country</option>
+                                    <option value="2">India</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <label for="c_diff_fname" class="text-black">First Name <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="c_diff_fname" name="c_diff_fname">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="c_diff_lname" class="text-black">Last Name <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="c_diff_lname" name="c_diff_lname">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <label for="c_diff_address" class="text-black">Address <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="c_diff_address" name="c_diff_address"
+                                        placeholder="Street address">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" class="form-control"
+                                    placeholder="Apartment, suite, unit etc. (optional)">
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <label for="c_diff_state_country" class="text-black">State / Country <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="c_diff_state_country"
+                                        name="c_diff_state_country">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="c_diff_postal_zip" class="text-black">Postal / Zip <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="c_diff_postal_zip"
+                                        name="c_diff_postal_zip">
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-5">
+                                <div class="col-md-6">
+                                    <label for="c_diff_phone" class="text-black">Phone <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="c_diff_phone" name="c_diff_phone"
+                                        placeholder="Phone Number">
+                                </div>
+                            </div>
+
+                          
+                            <div class="form-group">
+                                <label for="c_save_address" class="text-black">
+                                    <input type="checkbox" value="1" id="c_save_address" name="c_save_address">
+                                    Save this address for future use
+                                </label>
+                            </div>
+                        </div>
+
+                       
+                        <div class="form-group">
+                            <label for="c_order_notes" class="text-black">Order Notes</label>
+                            <textarea name="c_order_notes" id="c_order_notes" cols="30" rows="5" class="form-control"
+                                placeholder="Write your notes here..."></textarea>
+                        </div>  -->
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="row mb-5">
+                        <div class="col-md-12">
+                            <h2 class="h3 mb-3 text-black">Coupon Code</h2>
+                            <div class="p-3 p-lg-5 border bg-white">
+                                <label for="c_code" class="text-black mb-3">Enter your coupon code if you have
+                                    one</label>
+                                <div class="input-group w-75 couponcode-wrap">
+                                    <input type="text" class="form-control me-2" id="c_code" name="c_code"
+                                        placeholder="Coupon Code" aria-label="Coupon Code">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-black btn-sm" type="button"
+                                            id="button-addon2">Apply</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-5">
+                        <div class="col-md-12">
+                            <h2 class="h3 mb-3 text-black">Your Order</h2>
+                            <div class="p-3 p-lg-5 border bg-white">
+                                <table class="table site-block-order-table mb-5">
+                                    <thead>
+                                        <th>Product</th>
+                                        <th>Total</th>
+                                    </thead>
+                                    <tbody>
+                                        <% cartItems.forEach(item => { %>
+                                            <tr>
+                                                <td>
+                                                    <%= item.productId.productName %> <strong class="mx-2">x</strong>
+                                                    <%= item.quantity %>
+                                                </td>
+                                                <td>$<%= (item.price * item.quantity).toFixed(2) %></td>
+                                            </tr>
+                                        <% }) %>
+
+                                        <!-- Cart Subtotal -->
+                                        <tr>
+                                            <td class="text-black font-weight-bold"><strong>Cart Subtotal</strong></td>
+                                            <td class="text-black">$<%= subtotal.toFixed(2) %></td>
+                                        </tr>
+
+                                        <!-- Order Total -->
+                                        <tr>
+                                            <td class="text-black font-weight-bold"><strong>Order Total</strong></td>
+                                            <td class="text-black font-weight-bold"><strong>$<%= total.toFixed(2) %></strong></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <!-- Payment Method -->
+                                <div class="border p-3 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" id="chequePayment"
+                                            name="payment_method" value="cash_on_delivery">
+                                        <label class="form-check-label h6 mb-0" for="chequePayment">Cash on Delivery</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <button class="btn btn-black btn-lg py-3 btn-block" type="submit">Place Order</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<%- include("../partials/user/footer") %>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // Function to toggle new address form visibility and disable the existing address dropdown
+    function toggleNewAddressForm() {
+        const newAddressForm = document.querySelector('#new_address_form');
+        const existingAddressDropdown = document.querySelector('#c_select_address');
+        
+        // if (document.querySelector('#c_ship_different_address').checked) {
+        //     // Show the new address form and disable the existing address dropdown
+        //     newAddressForm.style.display = 'block';
+        //     existingAddressDropdown.disabled = true;
+        // } else {
+        //     // Hide the new address form and enable the existing address dropdown
+        //     newAddressForm.style.display = 'none';
+        //     existingAddressDropdown.disabled = false;
+        // }
+    }
+
+
+
+
+    const form = document.querySelector('#orderForm');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();  // Prevent form submission to handle it with AJAX
+
+        // Check if a payment method is selected
+        const paymentMethodSelected = document.querySelector('input[name="payment_method"]:checked');
+        if (!paymentMethodSelected) {
+            Swal.fire({
+                title: 'Payment Method Required',
+                text: 'Please select a payment method to place your order.',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Check if an address is selected
+        const existingAddress = document.querySelector('#c_select_address').value;
+        const shipDifferentCheckbox = document.querySelector('#c_ship_different_address');
+        const shipDifferent = shipDifferentCheckbox ? shipDifferentCheckbox.checked : false;
+
+        
+        let newAddressValid = true;
+
+        // If shipping to a different address, validate the new address fields
+        if (shipDifferent) {
+            const requiredFields = ['#c_diff_fname', '#c_diff_lname', '#c_diff_address', '#c_diff_state_country', '#c_diff_postal_zip', '#c_diff_phone'];
+            newAddressValid = requiredFields.every(selector => document.querySelector(selector).value.trim() !== '');
+
+            if (!newAddressValid) {
+                Swal.fire({
+                    title: 'Address Incomplete',
+                    text: 'Please complete all fields in the new address form.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+        } else if (!existingAddress) {  // If not shipping to a new address, ensure an existing address is selected
+            Swal.fire({
+                title: 'Address Required',
+                text: 'Please select an address to place your order.',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Send form data via AJAX if all checks pass
+        $.ajax({
+            url: '/checkout/place-order',
+            method: 'POST',
+            data: $(form).serialize(),
+            success: function(response) {
+                Swal.fire({
+                    title: 'Order Placed Successfully!',
+                    text: 'Thank you for your order. You will be redirected shortly.',
+                    icon: 'success',
+                    timer: 3000,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = `/shop`;
+                });
+            },
+            error: function(error) {
+                console.error("AJAX error response:", error.responseText);
+                Swal.fire({
+                    title: 'Error!',
+                    text: error.responseJSON?.message || 'Something went wrong, please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });
+</script>
+
+
+
+
+<script>
+    // Function to update the "Edit" button's link based on the selected address
+    function updateEditLink() {
+        const selectedAddressId = document.querySelector('#c_select_address').value;
+        const editLink = document.querySelector('#edit-address-link');
+
+        if (selectedAddressId) {
+            editLink.href = `/editAddresscheckout/${selectedAddressId}`;
+            editLink.style.pointerEvents = 'auto'; 
+            editLink.style.color = '';  
+        } 
+        //else {
+        //     editLink.href = '#';
+        //     editLink.style.pointerEvents = 'none';  // Disable clicking
+        //     editLink.style.color = 'gray';  // Gray out the link
+        // }
+    }
+
+    // Function to handle the "Edit" button click with SweetAlert2
+    function handleEditClick(event) {
+        const selectedAddressId = document.querySelector('#c_select_address').value;
+
+        if (!selectedAddressId) {
+            event.preventDefault();  // Prevent navigation
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Address Not Selected',
+                text: 'Please select an address before editing.',
+                confirmButtonText: 'OK'
+            });
+        }
+    }
+
+    // Initialize the link as disabled on page load
+    document.addEventListener('DOMContentLoaded', updateEditLink);
+</script>

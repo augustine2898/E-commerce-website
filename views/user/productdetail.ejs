@@ -11,22 +11,25 @@
 
     <div class="product-details-container">
       <!-- Image Gallery Section -->
-      <div class="image-gallery-section" >
+      <div class="image-gallery-section">
         <div id="carouselExampleControls" data-ride="carousel">
           <div class="carousel-inner">
             <% for (let i=0; i < product.productImage.length; i++) { %>
-              <div class="carousel-item <%= i === 0 ? 'active' : '' %>" style="--url: url('/uploads/product-image/<%= product.productImage[i] %>'); --zoom-x: 0%; --zoom-y: 0%; --display: none;">
-                <div class="image-zoom-container" >
-                <img class="d-block w-100" src="/uploads/product-image/<%= product.productImage[i] %>"
-                  alt="Slide <%= i + 1 %>">
+              <div class="carousel-item <%= i === 0 ? 'active' : '' %>"
+                style="--url: url('/uploads/product-image/<%= product.productImage[i] %>'); --zoom-x: 0%; --zoom-y: 0%; --display: none;">
+                <div class="image-zoom-container">
+                  <img class="d-block w-100" src="/uploads/product-image/<%= product.productImage[i] %>"
+                    alt="Slide <%= i + 1 %>">
                 </div>
               </div>
               <% } %>
-                <a class="carousel-control-prev" href="#carouselExampleControls" onclick="prevImage()" role="button" data-slide="prev">
+                <a class="carousel-control-prev" href="#carouselExampleControls" onclick="prevImage()" role="button"
+                  data-slide="prev">
                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                   <span class="sr-only">Previous</span>
                 </a>
-                <a class="carousel-control-next" href="#carouselExampleControls" onclick="nextImage()" role="button" data-slide="next">
+                <a class="carousel-control-next" href="#carouselExampleControls" onclick="nextImage()" role="button"
+                  data-slide="next">
                   <span class="carousel-control-next-icon" aria-hidden="true"></span>
                   <span class="sr-only">Next</span>
                 </a>
@@ -35,11 +38,11 @@
         </div>
         <div class="thumbnails">
           <thumbnails>
-          <% for (let i=0; i < product.productImage.length; i++) { %>
-            <img src="/uploads/product-image/<%= product.productImage[i] %>" class="thumbnail" alt="Product Thumbnail"
-              onclick="changeImage(<%= i %>)" />
-            <% } %>
-          
+            <% for (let i=0; i < product.productImage.length; i++) { %>
+              <img src="/uploads/product-image/<%= product.productImage[i] %>" class="thumbnail" alt="Product Thumbnail"
+                onclick="changeImage(<%= i %>)" />
+              <% } %>
+
         </div>
       </div>
 
@@ -65,24 +68,29 @@
               <% } %>
         </div>
         <div class="availability">
-          <% if (product.status==='Available' ) { %>
-            <span class="in-stock">In Stock</span>
-            <% } else if (product.status==='out of stock' ) { %>
+          <% if (product.status === 'Available') { %>
+              <span class="in-stock">In Stock</span>
+              <span class="quantity-info">Quantity Available: <%= product.quantity %></span>
+          <% } else if (product.status === 'Out of Stock') { %>
               <span class="out-of-stock">Out of Stock</span>
-              <% } else if (product.status==='Discontinued' ) { %>
-                <span class="discontinued">This product has been discontinued.</span>
-                <% } %>
-        </div>
+          <% } else if (product.status === 'Discontinued') { %>
+              <span class="discontinued">This product has been discontinued.</span>
+          <% } %>
+      </div>
+      
+
 
         <!-- Add to Cart Section -->
+        <div class="quantity">
+          <button class="minus" aria-label="Decrease">&minus;</button>
+          <input type="number" class="input-box" value="1" min="1" max="10">
+          <button class="plus" aria-label="Increase">&plus;</button>
+        </div>
+
         <div class="add-to-cart-section">
-          <div class="quantity-selector">
-            <button class="decrease">-</button>
-            <input type="number" value="1" min="1" max="<%= product.stock %>">
-            <button class="increase">+</button>
-          </div>
           <button class="wishlist-btn">Add to Wishlist</button>
-          <button class="cart-btn">Add to Cart</button>
+          <button class="cart-btn" data-product-id="<%= product._id %>">Add to Cart</button>
+
         </div>
 
         <!-- Product Description -->
@@ -128,7 +136,7 @@
                         <% } %>
                   </div>
                   <div class="button-group">
-                    <button class="cart-btn" data-id="<%= product._id %>">Add to Cart</button>
+                    <button class="cart-btn" data-product-id="<%= product._id %>">Add to Cart</button>
                     <button class="wishlist-btn" data-id="<%= product._id %>" data-filled="false">Add to
                       Wishlist</button>
                   </div>
@@ -156,7 +164,7 @@
               <%= '⭐' .repeat(review.rating) %>
             </span>
             <span>
-              <%= review.user.name %>
+              <%= review.user ? review.user.name : 'Anonymous' %> <!-- Display 'Anonymous' if user is null -->
             </span>
           </div>
           <div class="review-content">
@@ -167,9 +175,10 @@
           <div class="review-date">
             <small>Reviewed on <%= new Date(review.createdAt).toLocaleDateString() %></small>
           </div>
-          <% if (user && review.user._id.toString()===user._id.toString()) { %>
+          <% if (user && review.user && review.user._id.toString()===user._id.toString()) { %>
             <form action="/deleteReview/<%= review._id %>" method="POST" style="display: inline;">
-              <i class="fas fa-trash-alt" title="Delete Review" style="cursor: pointer;" onclick="this.closest('form').submit();"></i>
+              <i class="fas fa-trash-alt" title="Delete Review" style="cursor: pointer;"
+                onclick="this.closest('form').submit();"></i>
             </form>
             <% } %>
         </div>
@@ -203,77 +212,190 @@
     </div>
   </div>
 
-  
-</div>
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="/js/usersideimagezoom.js"></script>
 
+
+  </div>
   <%- include("../partials/user/footer") %>
-<script>
-  function scrollToReviews() {
-    const reviewsSection = document.getElementById('customer-reviews');
-    if (reviewsSection) {
-      reviewsSection.scrollIntoView({ behavior: 'smooth' });
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="/js/usersideimagezoom.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script> document.addEventListener("DOMContentLoaded", function () {
+        const quantityContainer = document.querySelector(".quantity");
+        const minusBtn = quantityContainer.querySelector(".minus");
+        const plusBtn = quantityContainer.querySelector(".plus");
+        const inputBox = quantityContainer.querySelector(".input-box");
+
+        function updateButtonStates() {
+          const value = parseInt(inputBox.value);
+          minusBtn.disabled = value <= 1;
+          plusBtn.disabled = value >= parseInt(inputBox.max);
+        }
+
+        function decreaseValue() {
+          let value = parseInt(inputBox.value);
+          value = isNaN(value) ? 1 : Math.max(value - 1, 1);
+          inputBox.value = value;
+          updateButtonStates();
+          console.log('Quantity decreased: ', value);
+        }
+
+        function increaseValue() {
+          let value = parseInt(inputBox.value);
+          value = isNaN(value) ? 1 : Math.min(value + 1, parseInt(inputBox.max));
+          inputBox.value = value;
+          updateButtonStates();
+          console.log('Quantity increased: ', value);
+        }
+
+        minusBtn.addEventListener("click", decreaseValue);
+        plusBtn.addEventListener("click", increaseValue);
+
+        updateButtonStates();
+      });
+    </script>
+    <script>
+      function scrollToReviews() {
+        const reviewsSection = document.getElementById('customer-reviews');
+        if (reviewsSection) {
+          reviewsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+
+      const images = <% -JSON.stringify(product.productImage) %>;
+      let currentImageIndex = 0;
+
+
+      function changeImage(index) {
+        const mainImage = document.querySelector('.carousel-inner .active img');
+        const newImageSrc = `/uploads/product-image/${images[index]}`;
+        mainImage.src = newImageSrc;
+      }
+
+      function nextImage() {
+        currentImageIndex = (currentImageIndex + 1) % images.length;
+        changeImage(currentImageIndex); // Call changeImage to update image
+      }
+
+      function prevImage() {
+        currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+        changeImage(currentImageIndex); // Call changeImage to update image
+      }
+
+    </script>
+
+    <script>
+     document.querySelectorAll('.cart-btn').forEach(button => {
+  button.addEventListener('click', async (event) => {
+    const productId = event.target.getAttribute('data-product-id');
+
+    // Try to find the quantity input box within the product info section
+    const quantityInput = event.target.closest('.product-info-section')?.querySelector('.input-box');
+    
+    let quantity = 1; // Default quantity
+
+    if (quantityInput) {
+      // If the quantity input exists, use the value from the input
+      quantity = parseInt(quantityInput.value) || 1; // Ensure it's a number, default to 1 if not
     }
-  }
 
-  const images = <%-JSON.stringify(product.productImage)%>;// Corrected here
-  let currentImageIndex = 0;
+    // Check if the quantity is zero
+    if (quantity === 0) {
+      Swal.fire('Out of Stock', 'Sorry, this product is out of stock.', 'error');
+      return; // Prevent further actions if quantity is zero
+    }
 
+    // Check if the user is logged in (assuming user session is stored in a variable or cookie)
+    const userIsLoggedIn = Boolean(<%= user ? 'true' : 'false' %>); // Adjust this to your session/user check
 
-  function changeImage(index) {
-    const mainImage = document.querySelector('.carousel-inner .active img');
-    const newImageSrc = `/uploads/product-image/${images[index]}`;
-    mainImage.src = newImageSrc;
-  }
+    if (!userIsLoggedIn) {
+      Swal.fire({
+        title: 'Please Log In',
+        text: 'You must be logged in to add items to your cart.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Log In',
+        cancelButtonText: 'Cancel',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = '/login'; // Redirect to login page
+        }
+      });
+      return; // Prevent further actions if the user is not logged in
+    }
 
-  function nextImage() {
-    currentImageIndex = (currentImageIndex + 1) % images.length;
-    changeImage(currentImageIndex); // Call changeImage to update image
-  }
+    // Send request to add product to cart
+    try {
+      const response = await fetch('/cart/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId, quantity }), // Send both productId and quantity
+      });
 
-  function prevImage() {
-    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
-    changeImage(currentImageIndex); // Call changeImage to update image
-  }
-</script>
+      // Check if the response was successful
+      if (response.ok) {
+        const data = await response.json();
+        if (data.message === 'Product added to cart') {
+          Swal.fire('Success', data.message, 'success');
+        } else {
+          Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+        }
+      } else {
+        // If the response is not OK, assume it's an error and display the message
+        const data = await response.json();
+        Swal.fire('Error', data.message || 'Failed to add product to cart. Please try again.', 'error');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      Swal.fire('Error', 'Failed to add product to cart. Please try again.', 'error');
+    }
+  });
+});
 
-  <style>
-    .image-zoom-container {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    overflow: hidden; /* To prevent overflow of zoom effect */
-}
+    </script>
 
-.image-zoom-container img {
-    height: 400px;
-    object-fit: cover;
-    object-position: center; /* Center the image */
-}
+    <style>
+      .image-zoom-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        /* To prevent overflow of zoom effect */
+      }
 
-.image-zoom-container::after {
-    opacity: 0; /* Start hidden */
-    content: '';
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Optional: dark overlay */
-    background-image: var(--url);
-    background-size: 200%;
-    background-position: var(--zoom-x) var(--zoom-y);
-    position: absolute;
-    left: 0;
-    top: 0;
-    transition: opacity 0.3s ease; /* Smooth fade-in/fade-out transition */
-}
+      .image-zoom-container img {
+        height: 400px;
+        object-fit: cover;
+        object-position: center;
+        /* Center the image */
+      }
 
-.image-zoom-container:hover::after {
-    opacity: 1; /* Show zoom effect on hover */
-}
+      .image-zoom-container::after {
+        opacity: 0;
+        /* Start hidden */
+        content: '';
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        /* Optional: dark overlay */
+        background-image: var(--url);
+        background-size: 200%;
+        background-position: var(--zoom-x) var(--zoom-y);
+        position: absolute;
+        left: 0;
+        top: 0;
+        transition: opacity 0.3s ease;
+        /* Smooth fade-in/fade-out transition */
+      }
 
-</style>
+      .image-zoom-container:hover::after {
+        opacity: 1;
+        /* Show zoom effect on hover */
+      }
+    </style>
 
     <style>
       /* General Styling */
@@ -448,6 +570,11 @@
         margin: 10px 0;
       }
 
+      .regular-price {
+
+        color: #000000;
+      }
+
       .in-stock {
         color: green;
       }
@@ -468,28 +595,42 @@
         margin: 20px 0;
       }
 
-      .quantity-selector {
-        display: flex;
-        align-items: center;
-      }
-
-      .quantity-selector button {
-        background-color: #007bff;
-        color: white;
+      .quantity button {
+        background-color: #3498db;
+        color: #fff;
         border: none;
-        padding: 10px;
-        border-radius: 5px;
         cursor: pointer;
-        margin: 5px 5px;
+        font-size: 20px;
+        width: 30px;
+        height: auto;
+        text-align: center;
+        transition: background-color 0.2s;
       }
 
-      .quantity-selector input {
-        width: 50px;
-        text-align: center;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        margin: 0 5px;
+      .quantity button:hover {
+        background-color: #2980b9;
       }
+
+      .input-box {
+        width: 40px;
+        text-align: center;
+        border: none;
+        padding: 8px 10px;
+        font-size: 16px;
+        outline: none;
+      }
+
+      /* Hide the number input spin buttons */
+      .input-box::-webkit-inner-spin-button,
+      .input-box::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      .input-box[type="number"] {
+        -moz-appearance: textfield;
+      }
+
 
       .product-description {
         margin-top: 20px;
@@ -501,7 +642,8 @@
       }
 
       .product-card {
-        max-width: 100%;
+        max-width: 98%;
+
       }
 
       /* Related products */
@@ -509,10 +651,12 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: space-evenly;
+
       }
 
       .product-card {
         display: flex;
+        margin: 4px;
         flex-direction: column;
         justify-content: space-between;
         min-height: 400px;
@@ -524,7 +668,8 @@
       }
 
       .product-image {
-        max-height: 200px;
+        height: 190px;
+
         width: 100%;
         object-fit: cover;
       }
@@ -565,8 +710,8 @@
         color: green;
       }
 
-      .regular-price {
-        margin-left: 10px;
+      .row_product__filter .regular-price {
+        margin-left: 100px;
         color: #000000;
       }
 
@@ -644,7 +789,7 @@
 
       .reviews-section {
         margin-top: 40px;
-      padding: 40px;
+        padding: 40px;
 
       }
 
@@ -722,6 +867,6 @@
       }
 
       .before-footer-section {
-    padding: 0rem 0 12rem 0 !important;
-}
+        padding: 0rem 0 12rem 0 !important;
+      }
     </style>

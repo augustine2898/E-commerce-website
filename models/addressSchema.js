@@ -16,6 +16,10 @@ const addressSchema = new Schema({
             type: String,
             required: true,
         },
+        addressDetail: { 
+            type: String,
+            required: true,
+        },
         city: {
             type: String,
             required: true,
@@ -38,10 +42,10 @@ const addressSchema = new Schema({
         },
         altPhone: {
             type: String,
-            required: true,
+            default: '',
         }
     }]
-})
+});
 
 const Address = mongoose.model("Address", addressSchema);
 

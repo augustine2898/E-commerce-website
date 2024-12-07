@@ -5,7 +5,7 @@
             <form id="editCategoryForm" onsubmit="return validateForm()" method="post" action="/admin/editCategory/<%= category._id %>">
                 <div class="mb-4 mt-30">
                     <label for="product_name" class="form-label">Name</label>
-                    <input type="text" id="product_name" name="categoryName" value="<%= category.name %>" class="form-control border" />
+                    <input type="text" id="product_name" name="name" value="<%= category.name %>" class="form-control border" />
                     <div id="name-error" class="error-message text-danger" style="display:none;"></div>
                 </div>
 
@@ -22,8 +22,63 @@
         </div>
     </div>
 </div>
-
+<%- include("../../views/partials/admin/footer") %>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    $(document).ready(function() {
+        $('#editCategoryForm').on('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+
+            // Clear previous error messages
+            clearErrorMessages();
+
+            // Validate form
+            if (!validateForm()) {
+                return; // Stop if the form is invalid
+            }
+
+            const form = $(this);
+            const actionUrl = form.attr('action'); // Get the form action URL
+            const formData = form.serialize(); // Serialize form data
+
+            $.ajax({
+                type: 'POST',
+                url: actionUrl,
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        // Show success alert
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            // Redirect after alert is closed
+                            window.location.href = '/admin/category'; // Redirect to your desired page
+                        });
+                    } else {
+                        // Show error alert
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: response.message || 'Something went wrong!',
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    const errorMessage = xhr.responseJSON?.error || 'An error occurred';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: errorMessage,
+                    });
+                }
+            });
+        });
+    });
+
     function validateForm() {
         clearErrorMessages();
 
@@ -61,4 +116,4 @@
         });
     }
 </script>
-<%- include("../../views/partials/admin/footer") %>
+

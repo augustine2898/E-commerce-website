@@ -49,7 +49,7 @@ const productSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ["Available", "out of stock", "Discontinued"],
+        enum: ["Available", "Out of Stock", "Discontinued"],
         required: true,
         default: "Available",
     },
@@ -57,6 +57,7 @@ const productSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Review"
     }],
+    originalSalePrice: { type: Number, default: null },
 
 }, { timestamps: true });
 

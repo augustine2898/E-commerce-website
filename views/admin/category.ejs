@@ -174,7 +174,8 @@
                 <h2 class="content-title">Category Management</h2>
                 <form action="/admin/category/" method="get" class="d-inline">
                     <div class="input-group" style="width: 300px; margin: 10px auto;">
-                        <input type="text" class="form-control" placeholder="Search categories" name="search" value="<%search%>" />
+                        <input type="text" class="form-control" placeholder="Search categories" name="search"
+                            value="<%search%>" />
                         <button class="btn btn-primary" type="submit">Search</button>
                     </div>
                 </form>
@@ -245,13 +246,15 @@
                                         </td>
                                         <td>
                                             <% if (category.isListed) { %>
-                                                <a href="/admin/listCategory?id=<%= category._id %>"
-                                                    class="btn btn-danger btn-sm">Unlist</a>
+                                                <a href="javascript:void(0);" class="btn btn-danger btn-sm"
+                                                    onclick="confirmToggleCategory('<%= category._id %>', true)">Unlist</a>
                                                 <% } else { %>
-                                                    <a href="/admin/unlistCategory?id=<%= category._id %>"
-                                                        class="btn btn-success btn-sm">List</a>
+                                                    <a href="javascript:void(0);" class="btn btn-success btn-sm"
+                                                        onclick="confirmToggleCategory('<%= category._id %>', false)">List</a>
                                                     <% } %>
                                         </td>
+
+
                                         <td>
                                             <a href="/admin/editCategory?id=<%=category._id%>"
                                                 class="btn btn-info btn-sm">Edit</a>
@@ -272,28 +275,26 @@
             </div>
 
             <div class="pagination-container">
-                <% if (currentPage> 1) { %>
-                    <a href="?page=<%= currentPage - 1 %>">Previous</a>
-                    <% } %>
-                        <% for (let i=1; i <=totalPages; i++) { %>
-                            <% if (i===currentPage) { %>
-                                <span class="current-page">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center mb-20">
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>">
                                     <%= i %>
-                                </span>
-                                <% } else { %>
-                                    <a href="?page=<%= i %>">
-                                        <%= i %>
-                                    </a>
-                                    <% } %>
-                                        <% } %>
-                                            <% if (currentPage < totalPages) { %>
-                                                <a href="?page=<%= currentPage + 1 %>">Next</a>
-                                                <% } %>
+                                </a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </nav>
             </div>
+        </div>
         </section>
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
         <script>
+
+            
+
             function handleFormSubmit(event) {
                 event.preventDefault();
 
@@ -319,7 +320,15 @@
                         return response.json();
                     })
                     .then(data => {
-                        location.reload();
+                        Swal.fire({
+                            title:"New category added",
+                            icon:"success",
+                            text: "This category as been added!",
+
+                        }).then(() => {
+                                    location.reload(); 
+                                })
+                        
                     })
                     .catch(error => {
 
@@ -501,6 +510,48 @@
                     }
                 });
             }
+
+            function confirmToggleCategory(id, isListed) {
+                const action = isListed ? 'unlist' : 'list';
+                const actionText = isListed ? 'You will not be able to recover this category!' : 'You want to list this category again!';
+                const confirmButtonText = isListed ? 'Yes, unlist it!' : 'Yes, list it!';
+                const successMessage = isListed ? 'Your category has been unlisted.' : 'Your category has been listed again.';
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: actionText,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: confirmButtonText,
+                    cancelButtonText: 'No, keep it ' + (isListed ? 'listed' : 'unlisted')
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/admin/${action}Category?id=${id}`, {
+                            method: 'GET'
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    return response.json();
+                                } else {
+                                    throw new Error('Network response was not ok');
+                                }
+                            })
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire(successMessage, '', 'success')
+                                        .then(() => location.reload()); // Reload the page to see changes
+                                } else {
+                                    Swal.fire('Error!', data.message, 'error');
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error in listing/unlisting category:", error);
+                                Swal.fire('Error!', 'There was a problem ' + action + 'ing the category.', 'error');
+                            });
+                    }
+                });
+            }
+
 
         </script>
         <%- include("../../views/partials/admin/footer") %>

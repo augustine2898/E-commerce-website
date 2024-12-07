@@ -12,7 +12,9 @@ const page404 =async(req,res)=>{
 }
 
 const loadLogin =(req,res)=>{
+    
     if(req.session.admin){
+        
         return res.redirect("/admin/dashboard")
     }
     res.render("admin-login",{message:null})

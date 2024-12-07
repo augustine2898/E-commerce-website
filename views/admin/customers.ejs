@@ -58,14 +58,10 @@
                             <td><%= customer.email %></td>
                             <td><%= customer.phone %></td>
                             <td class="text-center">
-                                <% if(!customer.isBlocked) { %>
-                                    <button class="btn btn-danger btn-sm">
-                                        <a href="/admin/blockCustomer?id=<%= customer._id %>&page=<%= currentPage %>" class="text-white">Block</a>
-                                    </button>
+                                <% if (!customer.isBlocked) { %>
+                                    <button class="btn btn-danger btn-sm" onclick="confirmAction('<%= customer._id %>', false)">Block</button>
                                 <% } else { %>
-                                    <button class="btn btn-success btn-sm">
-                                        <a href="/admin/unblockCustomer?id=<%= customer._id %>&page=<%= currentPage %>" class="text-white">Unblock</a>
-                                    </button>
+                                    <button class="btn btn-success btn-sm" onclick="confirmAction('<%= customer._id %>', true)">Unblock</button>
                                 <% } %>
                             </td>
                         </tr>
@@ -87,3 +83,29 @@
     </div>
 </div>
 <%- include("../../views/partials/admin/footer") %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function confirmAction(id, isBlocked) {
+    const currentPage = new URLSearchParams(window.location.search).get('page') || 1
+    const action = isBlocked ? 'unblock' : 'block';
+    const message = isBlocked ? 'You will unblock this customer!' : 'You will block this customer!';
+
+    Swal.fire({
+        title: `Are you sure you want to ${action} this customer?`,
+        text: message,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: `Yes, ${action} it!`
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Redirect to the appropriate action based on isBlocked
+            window.location.href = isBlocked ? `/admin/unblockCustomer?id=${id}&page=${currentPage}` : `/admin/blockCustomer?id=${id}&page=${currentPage}`;
+        }
+    });
+}
+
+
+
+</script>

@@ -56,7 +56,7 @@ const customerinfo = async (req, res) => {
             sort: sort, 
             order: order 
         });
-    } catch (error) {
+    } catch (error) {//crate erro
         console.error(error); 
         res.redirect("/pageerror");
     }
@@ -66,29 +66,59 @@ const customerinfo = async (req, res) => {
 
 
 
-const customerBlocked= async(req,res)=>{
+const customerBlocked = async (req, res) => {
     try {
         let id = req.query.id;
         let page = req.query.page || 1;
-        console.log(req.query.page)
-        await User.updateOne({_id:id},{$set:{isBlocked:true}});
-        res.redirect(`/admin/users?page=${page}`);
-    } catch (error) {
-        res.redirect("/pageerror");
-    }
-}
 
-const customerUnblocked= async(req,res)=>{
+        // Update the user's isBlocked status
+        const result = await User.updateOne({ _id: id }, { $set: { isBlocked: true } });
+        console.log('Block Result:', result);
+
+        // Check if the user is currently logged in and block them
+        if (req.user && req.user._id.toString() === id) {
+            req.session.destroy((err) => {
+                if (err) {
+                    console.error('Session destroy error:', err);
+                    return res.redirect("/pageerror");
+                }
+
+                console.log(`User with ID ${id} has been logged out and blocked.`);
+                // After destroying the session, redirect or send a response
+                res.clearCookie('connect.sid'); // Clear the session cookie
+                return res.redirect(`/admin/users?page=${page}`);
+            });
+        } else {
+            res.redirect(`/admin/users?page=${page}`);
+        }
+    } catch (error) {
+        console.error('Error blocking user:', error);
+        res.redirect("/pageerror");
+    }
+};
+
+
+
+
+
+const customerUnblocked = async (req, res) => {
     try {
         let id = req.query.id;
         let page = req.query.page || 1;
-        console.log(page)
-        await User.updateOne({_id:id},{$set:{isBlocked:false}});
+        
+        // Update the user's isBlocked status
+        const result = await User.updateOne({ _id: id }, { $set: { isBlocked: false } });
+        
+        // Log the result of the update
+        console.log('Unblock Result:', result);
+
         res.redirect(`/admin/users?page=${page}`);
     } catch (error) {
+        console.error('Error unblocking user:', error);
         res.redirect("/pageerror");
     }
-}
+};
+
 
 module.exports = {
     customerinfo,

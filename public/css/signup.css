@@ -11,7 +11,7 @@ body {
   height: 100vh; /* Cover full viewport height */
   margin: 0; /* Remove default margin */
   position: relative; /* Position relative for absolute positioning of content */
- background-color: black; /*Fallback color */
+ /* background-color: black; Fallback color */
   background-image: url("/images/pexels-fotoaibe-1743227.jpg"); /* Background image */
   background-size: cover; /* Cover the entire viewport */
   background-position: center; /* Center the background image */
@@ -186,5 +186,16 @@ body {
   color:red;
   font-size: 0.75rem;
   display: none;
+  
+}
+
+.forgot-password-link{
+  font-size: 0.875rem;
+  color: rgb(255, 255, 255);
+  text-decoration: none;
+}
+.forgot-password-link:hover{
+  color:#dd8b8b;
+  text-decoration: underline;
   
 }

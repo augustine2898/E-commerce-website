@@ -1,0 +1,407 @@
+<%- include("../partials/user/header")%>
+    <div class="order-container">
+        <a href="/userProfile#orders" class="btn mr-3"
+            style="background-color: transparent; border: none; color: #3e3e3e; font-size: 1.5rem;">
+            <i class="fa fa-chevron-left"></i> <!-- Single left arrow icon -->
+        </a>
+        <!-- Order Header -->
+        <div class="order-header">
+            <h2>Order #<%= order.orderId %>
+            </h2>
+            <div class="order-status">
+                <span class="status <%= order.status === 'Paid' ? 'paid' : '' %>">
+                    <%= order.status %>
+                </span>
+                <% if (order.status==='Ready to Pickup' ) { %>
+                    <span class="status ready-to-pickup">Ready to Pickup</span>
+                    <% } %>
+            </div>
+            <p class="order-date">
+                <%= new Date(order.createdOn).toLocaleString('en-US', { dateStyle: 'medium' , timeStyle: 'short' }) %>
+            </p>
+
+        </div>
+
+        <!-- Order Details Section -->
+        <div class="order-details-section">
+            <div class="order-details">
+                <h3>Order Details</h3>
+                <table class="order-table">
+                    <thead>
+                        <tr>
+                            <th>Products</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% order.orderItems.forEach(item=> { %>
+                            <tr>
+                                <td>
+                                    <%= item.product.productName %>
+                                </td>
+                                <td>$<%= item.price.toFixed(2) %>
+                                </td>
+                                <td>
+                                    <%= item.quantity %>
+                                </td>
+                                <td>$<%= (item.price * item.quantity).toFixed(2) %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3">Subtotal:</td>
+                            <td>$<%= order.totalPrice.toFixed(2) %>
+                            </td>
+                        </tr>
+                        <!-- <tr>
+                            <td colspan="3">Discount:</td>
+                            <td>$<%= order.discount.toFixed(2) %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">Tax:</td>
+                            <td>$<%= order.tax || 0 %>
+                            </td>
+                        </tr> -->
+                        <tr>
+                            <td colspan="3"><strong>Total:</strong></td>
+                            <td><strong>$<%= order.finalAmount.toFixed(2) %></strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="customer-details">
+                <h3>Customer Details</h3>
+                <div class="customer-info">
+                    <div>
+                        <div class="order-status">Status:
+                            <span class="status badge-<%= order.status.toLowerCase().replace(' ', '-') %>"><%= order.status %></span>
+                          </div>                          
+                        <strong>
+                            <%= order.user.name %>
+                        </strong><br>
+                        Customer ID: #<%= order.user._id %>
+                    </div>
+                </div>
+                <!-- <p>Orders: <%= order.user.totalOrders || 0 %></p> -->
+                <p>Email: <%= order.user.email %>
+                </p>
+                <p>Mobile: <%= order.user.phone || 'N/A' %>
+                </p>
+            </div>
+
+            <div class="shipping-address">
+                <h3>Shipping Address</h3>
+                <% if (order.address && order.address.address.length> 0) { %>
+
+                    <% order.address.address.forEach(function(address) { %>
+                        <p>
+                            <%= address.name %><br>
+                                <%= address.addressDetail %><br>
+                                    <%= address.city %>, <%= address.state %>, <%= address.pincode %><br>
+                                                <%= address.phone %>
+                        </p>
+                        <% }) %>
+                            <% } else { %>
+                                <p>No address found for this order.</p>
+                                <% } %>
+            </div>
+
+
+
+
+
+            <!-- Action Button Section -->
+            <!-- <div class="order-action">
+                <% if (order.status==='Pending' || order.status==='Shipped' ) { %>
+                    <button class="order-action-btn"
+                        onclick="confirmCancelOrder('<%= JSON.stringify(order.orderItems) %>', '<%= order._id %>')">Cancel
+                        Order</button>
+                    <% } else if (order.status==='Delivered' ) { %>
+                        <button class="order-action-btn" onclick="confirmReturnOrder('<%= order._id %>')">Return
+                            Order</button>
+                        <% } else if (order.status==='Canceled' ) { %>
+                            <span class="text-muted"></span>
+                            <% } else { %>
+                                <span class="text-muted">Order cannot be canceled or returned</span>
+                                <% } %>
+            </div> -->
+        </div>
+    </div>
+        <%- include("../partials/user/footer") %>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            function confirmCancelOrder(orderItems, orderId) {
+                const items = JSON.parse(orderItems);  // Parse the order items to get the product details
+                let itemOptions = '';
+
+                // Create checkboxes for each product in the order
+                items.forEach((item, index) => {
+                    itemOptions += `
+      <div>
+        <input type="checkbox" id="item${index}" value="${item.product._id}">
+        <label for="item${index}">${item.product.productName} (Qty: ${item.quantity})</label>
+      </div>
+    `;
+                });
+
+                // Display a SweetAlert for selecting which items to cancel
+                Swal.fire({
+                    title: 'Select items to cancel',
+                    html: itemOptions,
+                    showCancelButton: true,
+                    confirmButtonText: 'Cancel Selected',
+                    preConfirm: () => {
+                        // Get all selected items
+                        const selectedItems = items
+                            .filter((_, index) => document.getElementById(`item${index}`).checked)
+                            .map(item => item.product._id);
+
+                        if (selectedItems.length === 0) {
+                            Swal.showValidationMessage('Please select at least one item to cancel.');
+                        }
+                        return selectedItems;
+                    }
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        // Send a POST request to cancel the selected items or the entire order
+                        fetch(`/cancelOrder/${orderId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                selectedItems: result.value,  // Send selected items to the backend
+                            }),
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.message === 'Order has been canceled successfully.') {
+                                    Swal.fire('Success', 'The selected items have been canceled.', 'success')
+                                        .then(() => {
+                                            // Refresh the page after successful cancellation
+                                            location.reload();
+                                        });
+                                } else {
+                                    Swal.fire('Error', data.message, 'error');
+                                }
+                            })
+                            .catch(error => {
+                                Swal.fire('Error', 'An error occurred while canceling the order.', 'error');
+                            });
+                    }
+                });
+            }
+
+
+            function confirmReturnOrder(orderId) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Do you want to return this order?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, return it',
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        console.log("Returning order:", orderId);
+                        // Here, you can proceed to call a server function to handle order return.
+                    }
+                });
+            }
+
+
+
+        </script>
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Roboto', sans-serif;
+                background-color: #f5f6fa;
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+            }
+
+            .header,
+            .footer {
+                background-color: #fff;
+                width: 100%;
+                padding: 20px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+
+            .order-container {
+                max-width: 1100px;
+                background-color: #fff;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                width: 100%;
+                margin: 30px auto;
+            }
+
+            .order-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 24px;
+            }
+
+            .order-header h2 {
+                font-size: 26px;
+                color: #333;
+            }
+
+            .order-status .status {
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: 14px;
+                color: #fff;
+                margin-right: 8px;
+            }
+
+            .status.paid {
+                background-color: #4caf50;
+            }
+
+            .status.ready-to-pickup {
+                background-color: #00bcd4;
+            }
+
+            .order-date {
+                font-size: 14px;
+                color: #888;
+            }
+
+            .order-details-section {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 30px;
+                margin-bottom: 20px;
+            }
+
+            .order-details,
+            .customer-details,
+            .shipping-address {
+                width: 100%;
+                max-width: 48%;
+            }
+
+            .order-details h3,
+            .customer-details h3,
+            .shipping-address h3 {
+                font-size: 20px;
+                margin-bottom: 12px;
+                color: #333;
+            }
+
+            .order-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+
+            .order-table th,
+            .order-table td {
+                padding: 12px;
+                text-align: left;
+                color: #555;
+            }
+
+            .order-table thead th {
+                background-color: #f0f0f0;
+                font-weight: bold;
+            }
+
+            .order-table tfoot td {
+                font-weight: bold;
+                font-size: 16px;
+            }
+
+            .order-action-btn {
+                width: 100%;
+                padding: 14px;
+                background-color: #ff5722;
+                color: #fff;
+                font-size: 18px;
+                font-weight: bold;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                margin-top: 20px;
+            }
+
+            .order-action-btn:hover {
+                background-color: #e64a19;
+            }
+
+            .text-muted {
+                font-size: 14px;
+                color: #888;
+            }
+
+            .customer-info {
+                font-size: 14px;
+                color: #555;
+            }
+
+            .shipping-address p {
+                font-size: 14px;
+                color: #555;
+            }
+
+            /* Ensure Footer is always at the bottom */
+            .footer {
+                margin-top: auto;
+            }
+
+            @media (max-width: 768px) {
+                .order-details-section {
+                    flex-direction: column;
+                }
+
+                .order-details,
+                .customer-details,
+                .shipping-address {
+                    max-width: 100%;
+                }
+            }
+
+            .badge-pending {
+                background-color: #f0ad4e;
+                color: black;
+            }
+
+            .badge-shipped {
+                background-color: #5bc0de;
+                color: black;
+            }
+
+            .badge-delivered {
+                background-color: #5cb85c;
+                color: white;
+            }
+
+            .badge-canceled {
+                background-color: #d9534f;
+                color: white;
+            }
+        </style>
+
+
+        
