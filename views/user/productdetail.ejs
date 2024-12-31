@@ -3,8 +3,8 @@
   <div class="product-detailed-page">
     <!-- Breadcrumbs -->
     <nav class="breadcrumbs">
-      <a href="/">Home</a> /
-      <a href="/category/<%= product.category._id %>">
+      <a>Home</a> /
+      <a "/category/<%= product.category._id %>">
         <%= product.category.name %>
       </a> / <%= product.productName %>
     </nav>
@@ -88,7 +88,7 @@
         </div>
 
         <div class="add-to-cart-section">
-          <button class="wishlist-btn">Add to Wishlist</button>
+          <button class="wishlist-btn"  onclick="addToWishlist('<%= product._id %>')">Add to Wishlist</button>
           <button class="cart-btn" data-product-id="<%= product._id %>">Add to Cart</button>
 
         </div>
@@ -216,7 +216,7 @@
 
   </div>
   <%- include("../partials/user/footer") %>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/js/usersideimagezoom.js"></script>
@@ -296,18 +296,18 @@
     let quantity = 1; // Default quantity
 
     if (quantityInput) {
-      // If the quantity input exists, use the value from the input
-      quantity = parseInt(quantityInput.value) || 1; // Ensure it's a number, default to 1 if not
+      
+      quantity = parseInt(quantityInput.value) || 1; 
     }
 
-    // Check if the quantity is zero
+    
     if (quantity === 0) {
       Swal.fire('Out of Stock', 'Sorry, this product is out of stock.', 'error');
       return; // Prevent further actions if quantity is zero
     }
 
-    // Check if the user is logged in (assuming user session is stored in a variable or cookie)
-    const userIsLoggedIn = Boolean(<%= user ? 'true' : 'false' %>); // Adjust this to your session/user check
+    
+    const userIsLoggedIn = Boolean(<%= user ? 'true' : 'false' %>); 
 
     if (!userIsLoggedIn) {
       Swal.fire({
@@ -354,6 +354,43 @@
     }
   });
 });
+
+
+async function addToWishlist(productId){
+            console.log("Attempting to add to wishlist:", productId)
+               $.ajax({
+
+                url:'/addToWishlist',
+                method:'POST',
+                data:{productId:productId},
+                success:(response)=>{
+                    if(response.status){
+
+                        Swal.fire({
+                            title:'Added to wishlist',
+                            text:'The product has been added to your wishlist',
+                            icon:'success',
+                            timer:2000
+                        })
+                    }else{
+                        Swal.fire({
+                            title:"Already in Wishlist",
+                            text:response.message,
+                            icon:'info',
+                            timer:2000,
+                        })
+                    }
+                },
+                error:(error)=>{
+                    Swal.fire({
+                        title:'Error',
+                        text:'There was an error adding the product to your Wishlist',
+                        timer:2000
+                    })
+                }
+
+               }) 
+            }
 
     </script>
 
@@ -788,7 +825,8 @@
       }
 
       .reviews-section {
-        margin-top: 40px;
+        margin-top: -226px;
+        
         padding: 40px;
 
       }

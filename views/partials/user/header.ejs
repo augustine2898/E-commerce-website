@@ -129,7 +129,10 @@
                             </div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fw-bold" href="/cart">Cart<img src="/images/cart.svg" alt="Cart"></a>
+                            <a class="nav-link fw-bold " href="/cart"><img src="/images/cart.svg" alt="Cart"></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-bold <%= currentPage === 'wishlist' ? 'active' : '' %>" href="/wishlist"><i class="far fa-heart fa-lg"></i></a>
                         </li>
                         <% } else { %>
                             <li class="nav-item">

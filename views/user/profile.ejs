@@ -165,15 +165,15 @@
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#track-orders" role="tab"
+                      <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#wallet" role="tab"
                         aria-controls="track-orders" aria-selected="false">
-                        <i class="fi-rs-shopping-cart-check mr-10"></i>Wallet Status
+                        <i class="fi-rs-shopping-cart-check mr-10"></i>Wallet History
                       </a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#wallet-history" role="tab"
                         aria-controls="track-orders" aria-selected="false">
-                        <i class="fi-rs-shopping-cart-check mr-10"></i>Wallet History
+                        <i class="fi-rs-shopping-cart-check mr-10"></i>Wallet
                       </a>
                     </li>
                     <li class="nav-item">
@@ -279,20 +279,21 @@
                       <div class="card-header">
                         <h5 class="mb-0">Your Orders</h5>
                       </div>
-                      <div class="card-body orders-container " style="max-height: 400px; overflow-y: auto;">
-                        <div class="table-responsive" >
+                      <div class="card-body orders-container" style="max-height: 400px; overflow-y: auto;">
+                        <div class="table-responsive">
                           <table class="table">
                             <thead style="position: sticky; top: 0; background-color: #ffffff; z-index: 1;">
                               <tr>
                                 <th>Order</th>
                                 <th>Status</th>
+                                <th>Payment</th>
                                 <th>Total</th>
                                 <th>Actions</th>
                               </tr>
                             </thead>
                             <tbody>
-                              <% if (orders && orders.length> 0) { %>
-                                <% orders.reverse().forEach(order=> { %>
+                              <% if (orders && orders.length > 0) { %>
+                                <% orders.reverse().forEach(order => { %>
                                   <tr class="order-card">
                                     <td>
                                       <%= order.orderId %>
@@ -300,44 +301,184 @@
                                     <td>
                                       <%= order.status %>
                                     </td>
-                                    <td>₹<%= order.finalAmount %>
+                                    <td>
+                                      <%= order.paymentMethod %>
                                     </td>
+                                    <td>₹<%= order.finalAmount %></td>
                                     <td>
                                       <!-- Order Action Section -->
                                       <div class="order-action">
-                                        <% if (order.status==='Pending' || order.status==='Shipped' ) { %>
-                                          <button class="btn-small"
-                                            onclick="confirmCancelOrder(event, '<%= order._id %>')">Cancel</button>
-                                          <% } else if (order.status==='Delivered' ) { %>
-                                            <button class="btn-small"
-                                              onclick="confirmReturnOrder(event, '<%= order._id %>')">Return</button>
-                                            <% } else if (order.status==='Canceled' ) { %>
-                                              <span class="text-muted">Order Canceled</span>
-                                              <% } else { %>
-                                                <span class="text-muted">Cannot cancel</span>
-                                                <% } %>
+                                        <% if (order.status === 'Payment Pending') { %>
+                                          <button class="btn-small"  data-order-id="<%= order.orderId %>" onclick="retryPayment('<%= order._id %>')">Retry Payment</button>
+                                        <% } else if (order.status === 'Processing' || order.status === 'Paid') { %>
+                                          <button class="btn-small" onclick="confirmCancelOrder(event,'<%= order._id %>')">Cancel</button>
+                                        <% } else if (order.status === 'Shipped') { %>
+                                          <button class="btn-small" onclick="confirmCancelOrder(event,'<%= order._id %>')">Cancel</button>
+                                        <% } else if (order.status === 'Delivered') { %>
+                                          <% const currentDate = new Date(); const deliveredDate = new Date(order.statusDates.Delivered); 
+                                            const timeDifference = (currentDate - deliveredDate) / (1000 * 3600 * 24); %>
+                                          <% if (timeDifference <= 7) { %>
+                                            <button class="btn-small" onclick="confirmReturnOrder(event,'<%= order._id %>')">Return</button>
+                                          <% } else { %>
+                                            <span class="text-muted">Return Period Expired</span>
+                                          <% } %>
+                                        <% } else if (order.status === 'Canceled') { %>
+                                          <span class="text-muted">Order Canceled</span>
+                                        <% } else if (order.status === 'Returned') { %>
+                                          <span class="text-muted">Order Returned</span>
+                                        <% } else { %>
+                                          <span class="text-muted">Cannot cancel</span>
+                                        <% } %>
                                       </div>
-
-
                                       <!-- "View" button to see order details -->
-                                      <a href="/order/<%= order._id %>" class="btn-small"
-                                        style="text-decoration: none;">View</a>
+                                      <a href="/order/<%= order._id %>" class="btn-small" style="text-decoration: none;">View</a>
                                     </td>
                                   </tr>
-                                  <% }) %>
-                                    <% } else { %>
-                                      <tr>
-                                        <td colspan="4">No orders found.</td>
-                                      </tr>
-                                      <% } %>
+                                <% }) %>
+                              <% } else { %>
+                                <tr>
+                                  <td colspan="5">No orders found.</td>
+                                </tr>
+                              <% } %>
                             </tbody>
-
-
                           </table>
                         </div>
                       </div>
                     </div>
                   </div>
+
+
+                  <!-- Wallet History Section -->
+                  <div class="tab-pane fade" id="wallet" role="tabpanel" aria-labelledby="wallet-tab">
+                    <div class="card">
+                      <div class="card-header">
+                        <h5 class="mb-0">Your Wallet</h5>
+                      </div>
+                      <div class="card-body wallet-container" style="max-height: 400px; overflow-y: auto;">
+                        <!-- Display the available wallet balance -->
+                        <div class="wallet-balance mb-3">
+                          <h5>Available Balance: ₹<%= walletBalance.toFixed(2) %>
+                          </h5>
+                        </div>
+
+                        <div class="table-responsive">
+                          <table class="table">
+                            <thead style="position: sticky; top: 0; background-color: #ffffff; z-index: 1;">
+                              <tr>
+                                <th>Transaction ID</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Date & Time</th>
+                                <th>Status</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <% if (walletHistory && walletHistory.length> 0) { %>
+                                <% walletHistory.forEach(transaction=> { %>
+                                  <tr class="transaction-card">
+                                    <td>
+                                      <%= transaction._id %>
+                                    </td>
+                                    <td>
+                                      <% if (transaction.transactionType==='cancel' ) { %>
+                                        Order Cancelled
+                                        <% } else if (transaction.transactionType==='return' ) { %>
+                                          Order Returned
+                                          <% } else if (transaction.transactionType==='wallet-order' ) { %>
+                                            Order Payment
+                                            <% } else { %>
+                                              Other
+                                              <% } %>
+                                    </td>
+                                    <td>₹<%= transaction.amount.toFixed(2) %>
+                                    </td>
+                                    <td>
+                                      <%= new Date(transaction.createdAt).toLocaleString() %>
+                                    </td>
+                                    <td>
+                                      <% if (transaction.status==='Completed' ) { %>
+                                        <span class="text-primary">Completed</span>
+                                        <% } else if (transaction.status==='Failed' ) { %>
+                                          <span class="text-danger">Failed</span>
+                                          <% } else { %>
+                                            <span class="text-muted">Pending</span>
+                                            <% } %>
+                                    </td>
+                                  </tr>
+                                  <% }) %>
+                                    <% } else { %>
+                                      <tr>
+                                        <td colspan="5" class="text-center">
+                                          <p class="mt-3 mb-3 text-muted">No transactions found in your wallet.</p>
+                                        </td>
+                                      </tr>
+                                      <% } %>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Add a popup modal for payment options -->
+                  <div id="paymentOptionsPopup" class="modal fade" tabindex="-1" aria-hidden="true">
+                    <form id="orderForm" action="/retryPayment/:orderId" method="POST">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Choose Payment Method</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Payment Method Options -->
+                                <div class="payment-option mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" id="cashOnDelivery" name="payment_method" value="cash_on_delivery">
+                                        <label class="form-check-label" for="cashOnDelivery">
+                                            <span class="payment-label">Cash on Delivery</span>
+                                        </label>
+                                    </div>
+                                </div>
+                
+                                <div class="payment-option mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" id="razorPay" name="payment_method" value="razorpay">
+                                        <label class="form-check-label" for="razorPay">
+                                            <span class="payment-label">Online Payment (Razorpay)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                
+                                <div class="payment-option mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" id="wallet" name="payment_method" value="wallet">
+                                        <label class="form-check-label" for="wallet">
+                                            <span class="payment-label">Wallet</span>
+                                        </label>
+                                    </div>
+                                </div>
+                
+                                <!-- Place Order Button -->
+                                <div class="form-group">
+                                    <button class="btn btn-dark btn-lg w-100" type="submit">Place Order</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </form>
+                </div>
+                
+                
+                
+                  
+
+                  
+
+
+
+
+
+
 
 
                   <!-- Other Tabs (Wallet, History, Referral) -->
@@ -379,7 +520,48 @@
         /* Text color */
       }
     </style>
+    <style>
+      .btn-small {
+        display: inline-block;
+        padding: 5px 10px;
+        min-width: 100px;
+        /* Ensure enough space for longer text like 'Retry Payment' */
+        height: 30px;
+        /* Maintain consistent height */
+        background-color: #007bff;
+        /* Button color */
+        color: #fff;
+        /* Text color */
+        border: none;
+        border-radius: 5px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 14px;
+        margin-top: 5px;
+        transition: background-color 0.3s, transform 0.2s;
+        line-height: 20px;
+        /* Vertically align the text */
+        white-space: nowrap;
+        /* Prevent text wrapping */
+      }
+
+      .btn-small:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+        /* Slight scale effect on hover */
+      }
+
+      .orders-container .btn-small {
+        background-color: #577194;
+        /* Adjusted button color */
+        color: white;
+        /* Text color */
+      }
+    </style>
+
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
       async function deleteAddress(addressId) {
         const confirmation = await Swal.fire({
@@ -454,8 +636,10 @@
                 text: result.message,
                 icon: 'success',
                 confirmButtonText: 'Okay'
-              });
-              window.location.href = "/userProfile#orders"; // Redirect to the orders section
+              })
+              window.location.href = "/userProfile#orders";
+              window.location.reload();
+              
             } else {
               await Swal.fire({
                 title: 'Error!',
@@ -474,7 +658,6 @@
           }
         }
       }
-
 
 
       async function confirmReturnOrder(event, orderId) {
@@ -504,7 +687,7 @@
                 icon: 'success',
                 confirmButtonText: 'Okay'
               });
-              window.location.href = "/userProfile#orders";
+              window.location.replace= "/userProfile#orders";
             } else {
               await Swal.fire({
                 title: 'Error!',
@@ -524,4 +707,157 @@
         }
       }
 
+    </script>
+
+    <script>
+      
+function retryPayment(orderId) {
+  // Optional: Do something with the orderId if needed, like storing it for the payment process
+  console.log(orderId)
+  // Show the payment options modal
+  var paymentModal = new bootstrap.Modal(document.getElementById('paymentOptionsPopup'));
+  paymentModal.show();
+
+
+      
+
+const form = document.getElementById('orderForm');
+
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                // Show a confirmation dialog before proceeding
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Do you want to place this order? You can review your order details before confirming.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Place Order',
+                    cancelButtonText: 'No, Cancel',
+                    reverseButtons: true
+                }).then(async (result) => {
+        if (result.isConfirmed) {
+            // Proceed if user confirmed the order
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+            
+            if (!paymentMethod) {
+                Swal.fire({
+                    title: 'Payment Method Required',
+                    text: 'Please select a payment method to place your order.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            const paymentMethodValue = paymentMethod.value;  
+            console.log(paymentMethodValue);
+
+                        try {
+                            const response = await fetch(`/retryPayment/${orderId}`, {
+                                method: "POST",
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    //c_select_address: document.querySelector('#c_select_address').value,
+                                    payment_method: paymentMethodValue,
+                                    
+                                })
+                                
+                            });
+
+                            //console.log(payment_method)
+                            const data = await response.json();
+                            console.log(data)
+                            if (response.ok) {
+                                if (paymentMethodValue === 'razorpay') {
+                                    // Trigger Razorpay payment flow
+                                    var options = {
+                                        "key": "rzp_test_BbOrMS3clwhzdK",
+                                        "amount": data.totalAmount * 100,
+                                        "currency": "INR",
+                                        "name": "Furni",
+                                        "description": "Test Transaction",
+                                        "order_id": data.razorpayOrderId,
+                                        "handler": async function (paymentResponse) {
+                                            // Handle payment success
+                                            const verifyResponse = await fetch('/verify-payment', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                },
+                                                body: JSON.stringify({
+                                                    payment: paymentResponse,
+                                                    order: data.orderId,
+                                                }),
+                                            });
+
+                                            const verifyData = await verifyResponse.json();
+                                            if (verifyResponse.ok) {
+                                                Swal.fire({
+                                                    title: 'Payment Successful!',
+                                                    text: 'Your order has been placed successfully. Redirecting to the shop page...',
+                                                    icon: 'success',
+                                                    timer: 3000,
+                                                    showConfirmButton: false,
+                                                }).then(() => {
+                                                    window.location.href = `/userProfile`;
+                                                });
+                                            } else {
+                                                Swal.fire({
+                                                    title: 'Payment Verification Failed!',
+                                                    text: verifyData.message || 'Please try again.',
+                                                    icon: 'error',
+                                                    confirmButtonText: 'OK',
+                                                });
+                                            }
+                                        },
+                                        "prefill": {
+                                            "name": "Gaurav Kumar",
+                                            "email": "gaurav.kumar@example.com",
+                                            "contact": "9000090000"
+                                        },
+                                        "theme": {
+                                            "color": "#3399cc"
+                                        },
+                                    };
+                                    const rzp1 = new Razorpay(options);
+                                    rzp1.open();
+                                } else if (paymentMethodValue === 'wallet' || paymentMethodValue === 'cash_on_delivery') {
+                                    Swal.fire({
+                                        title: 'Payment Successful!',
+                                        text: 'Your order has been placed successfully. Redirecting to the shop page...',
+                                        icon: 'success',
+                                        timer: 3000,
+                                        showConfirmButton: false,
+                                    }).then(() => {
+                                        window.location.href = "/userProfile";
+                                    });
+                                }
+                            } else {
+                                Swal.fire({
+                                    title: 'Order Placement Failed!',
+                                    text: data.message || 'Please try again.',
+                                    icon: 'error',
+                                    confirmButtonText: 'OK',
+                                });
+                            }
+                        } catch (error) {
+                            console.error('Error during order placement:', error);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'An error occurred while placing your order. Please try again.',
+                                icon: 'error',
+                                confirmButtonText: 'OK',
+                            });
+                        }
+                    } else {
+                        console.log('Order was not placed');
+                    }
+                });
+            });
+
+          }
     </script>

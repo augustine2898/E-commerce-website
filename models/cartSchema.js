@@ -34,8 +34,17 @@ const cartSchema= new Schema({
         cancellationReason:{
             type:String,
             default:"none",
-        }
-    }]
+        },
+       
+    }],
+    couponCode: {            
+        type: String,
+        default: ''
+    },
+    discount: {             
+        type: Number,
+        default: 0
+    },
 
 });
 

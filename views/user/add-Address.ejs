@@ -18,14 +18,7 @@
             <input type="text" class="form-control" id="lname" name="lastName" required>
           </div>
         </div>
-      
-        <div class="form-group row">
-          <div class="col-md-12">
-            <label for="landmark" class="text-black">Landmark<span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="landmark" name="landmark" required>
-          </div>
-        </div>
-      
+
         <div class="form-group row">
           <div class="col-md-12">
             <div class="mb-3">
@@ -35,6 +28,20 @@
           </div>
         </div>
       
+        <div class="form-group row">
+          <div class="col-md-12">
+            <label for="landmark" class="text-black">Landmark<span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="landmark" name="landmark" required>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <div class="col-md-12">
+            <label for="city" class="text-black">City<span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="city" name="city" required>
+          </div>
+        </div>
+
         <div class="form-group row">
           <div class="col-md-6">
             <label for="state" class="text-black">State <span class="text-danger">*</span></label>
@@ -142,6 +149,17 @@
         isValid = false;
       } else if (!/^[A-Za-z\s'-]+$/.test(lname)) {
         errorMessages.push('Invalid last name.');
+        isValid = false;
+      }
+
+      //validate city
+
+      const city = document.getElementById('city').value.trim();
+      if (!lname) {
+        errorMessages.push('City is required.');
+        isValid = false;
+      } else if (!/^[A-Za-z\s'-]+$/.test(city)) {
+        errorMessages.push('Invalid City name.');
         isValid = false;
       }
 

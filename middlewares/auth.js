@@ -7,7 +7,7 @@ const userAuth = async (req, res, next) => {
 
             if (user) {
                 if (user.isBlocked) {
-                    // If the user is blocked, destroy the session, clear the cookie, and redirect
+                   
                     req.session.destroy((err) => {
                         if (err) {
                             console.error('Session destroy error:', err);

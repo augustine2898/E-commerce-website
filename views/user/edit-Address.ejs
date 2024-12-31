@@ -32,6 +32,13 @@
         </div>
 
         <div class="form-group row">
+          <div class="col-md-12">
+            <label for="city" class="text-black">City<span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="city" name="city" value="<%=address.address[0].city%>" required>
+          </div>
+        </div>
+
+        <div class="form-group row">
           <div class="col-md-6">
             <label for="state" class="text-black">State <span class="text-danger">*</span></label>
             <input type="text" class="form-control" id="stateIn" name="state" value="<%= address.address[0].state %>" required>
@@ -147,6 +154,17 @@
         errorMessages.push('Address is required.');
         isValid = false;
       }
+
+      //validate city
+
+      // const city = document.getElementById('city').value.trim();
+      // if (!lname) {
+      //   errorMessages.push('City is required.');
+      //   isValid = false;
+      // } else if (!/^[A-Za-z\s'-]+$/.test(city)) {
+      //   errorMessages.push('Invalid City name.');
+      //   isValid = false;
+      // }
 
       // Validate state
       const state = document.getElementById('stateIn').value.trim();

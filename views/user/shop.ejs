@@ -17,15 +17,22 @@
 
     <div class="container">
         <div class="row mb-4 align-items-center">
+            <!-- Search Form (Left Side) -->
             <div class="col-md-4 col-12 mb-2 mb-md-0">
                 <form id="searchForm" action="/shop" method="GET">
                     <label for="search" class="form-label"></label>
                     <input type="text" id="search" name="search" class="form-control"
                         placeholder="Search by product name..." value="<%= searchQuery || '' %>">
+                    <input type="hidden" name="sort" value="<%= sort || '' %>">
+                    <input type="hidden" name="category" value="<%= category || '' %>">
+                    <input type="hidden" name="priceMin" value="<%= priceMin || '' %>">
+                    <input type="hidden" name="priceMax" value="<%= priceMax || '' %>">
+                    <input type="hidden" name="status" value="<%= status || '' %>">
                 </form>
             </div>
 
-            <div class="col-md-3 col-6 mb-2 mb-md-0">
+            <!-- Sort Dropdown (Right Side) -->
+            <div class="col-md-3 col-6">
                 <label for="sort" class="form-label"></label>
                 <select id="sort" class="form-select" name="sort">
                     <option value="">Default</option>
@@ -37,12 +44,14 @@
                 </select>
             </div>
 
-            <div class="col-md-3 col-6 text-md-end">
+            <!-- Filter Button (Right Side) -->
+            <div class="col-md-3 col-6 text-md-end ms-md-auto">
                 <button class="btn btn-primary w-100 w-md-auto mt-4" data-bs-toggle="modal"
                     data-bs-target="#filterModal">Filter</button>
             </div>
         </div>
 
+        <!-- Filter Modal -->
         <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -57,7 +66,7 @@
                                 <select class="form-select" name="category">
                                     <option value="">All Categories</option>
                                     <% for (let i=0; i < cat.length; i++) { %>
-                                        <option value="<%= cat[i]._id %>">
+                                        <option value="<%= cat[i]._id %>" <%=category===cat[i]._id ? 'selected' : '' %>>
                                             <%= cat[i].name %>
                                         </option>
                                         <% } %>
@@ -66,18 +75,26 @@
 
                             <div class="mb-3">
                                 <label for="priceRange" class="form-label">Price Range</label>
-                                <input type="number" class="form-control" name="priceMin" placeholder="Min Price">
-                                <input type="number" class="form-control mt-2" name="priceMax" placeholder="Max Price">
+                                <input type="number" class="form-control" name="priceMin" placeholder="Min Price"
+                                    value="<%= priceMin || '' %>">
+                                <input type="number" class="form-control mt-2" name="priceMax" placeholder="Max Price"
+                                    value="<%= priceMax || '' %>">
                             </div>
 
                             <div class="mb-3">
                                 <label for="status" class="form-label">Status</label>
                                 <select class="form-select" name="status">
                                     <option value="">Any Status</option>
-                                    <option value="Available">Available</option>
-                                    <option value="Out of Stock">Out of Stock</option>
+                                    <option value="Available" <%=status==='Available' ? 'selected' : '' %>>Available
+                                    </option>
+                                    <option value="Out of Stock" <%=status==='Out of Stock' ? 'selected' : '' %>>Out of
+                                        Stock</option>
                                 </select>
                             </div>
+
+                            <!-- Hidden fields for other parameters -->
+                            <input type="hidden" name="search" value="<%= searchQuery || '' %>">
+                            <input type="hidden" name="sort" value="<%= sort || '' %>">
 
                             <button type="submit" class="btn btn-primary">Apply Filters</button>
                         </form>
@@ -86,6 +103,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- Products Section -->
     <div class="untree_co-section product-section before-footer-section">
@@ -97,80 +115,77 @@
             </div>
 
             <div class="row product__filter">
-                <% for (let i = 0; i < products.length; i++) { %>
-                <div class="col-6 col-sm-4 col-md-3 mb-4"> 
-                    <div class="product-card">
-                       
-                        <div class="product-img-action-wrap">
-                            <a href="/productDetails?id=<%= products[i]._id %>">
-                                <img class="product-image" src="/uploads/product-image/<%= products[i].productImage[0] %>"
-                                    alt="<%= products[i].productName %>">
-                            </a>
-                        </div>
-    
-                        
-                        <div class="product-info">
-                            <h3><%= products[i].productName %></h3>
-    
-                            <div class="price-section">
-                                <% if (products[i].salePrice && products[i].regularPrice> products[i].salePrice) {
-                                    %>
-                                    <span class="original-price">₹<%= products[i].regularPrice %></span>
-                                    <span class="discounted-price">₹<%= products[i].salePrice %></span>
-                                    <span class="discount-percentage">(<%= ((products[i].regularPrice -
-                                            products[i].salePrice) / products[i].regularPrice * 100).toFixed(0) %> %
-                                            OFF)</span>
-    
-                                    <% } else { %>
-                                        <span class="regular-price fw-bold ">₹<%= products[i].regularPrice %></span>
-                                        <% } %>
+                <% for (let i=0; i < products.length; i++) { %>
+                    <div class="col-6 col-sm-4 col-md-3 mb-4">
+                        <div class="product-card">
+                            <div class="product-img-action-wrap">
+                                <!-- Heart Icon on Top Right Corner -->
+                                <span class="wishlist-icon" onclick="toggleWishlist('<%= products[i]._id %>')">
+                                    <% if (wishlistProductIds.includes(products[i]._id.toString())) { %>
+                                        <i class="fas fa-heart filled-heart" id="heart-<%= products[i]._id %>"></i>
+                                        <% } else { %>
+                                            <i class="far fa-heart empty-heart" id="heart-<%= products[i]._id %>"></i>
+                                            <% } %>
+                                </span>
+
+                                <a href="/productDetails?id=<%= products[i]._id %>">
+                                    <img class="product-image"
+                                        src="/uploads/product-image/<%= products[i].productImage[0] %>"
+                                        alt="<%= products[i].productName %>">
+                                </a>
                             </div>
-    
-                            
-                            <div class="button-section">
-                               
-                                <button class="cart-btn" data-product-id="<%= products[i]._id %>">Add to Cart</button>
-    
-                                
-                                <button class="wishlist-btn" data-id="<%= products[i]._id %>">
-                                    Add to Wishlist
-                                </button>
+
+                            <div class="product-info">
+                                <h3>
+                                    <%= products[i].productName %>
+                                </h3>
+
+                                <div class="status-section">
+                                    <% if (products[i].quantity> 0) { %>
+                                        <span class="status available">Available</span>
+                                        <% } else { %>
+                                            <span class="status out-of-stock">Out of Stock</span>
+                                            <% } %>
+                                </div>
+
+                                <div class="price-section">
+                                    <% if (products[i].salePrice && products[i].regularPrice> products[i].salePrice) {
+                                        %>
+                                        <span class="original-price">₹<%= products[i].regularPrice %></span>
+                                        <span class="discounted-price">₹<%= products[i].salePrice %></span>
+                                        <span class="discount-percentage">
+                                            (<%= ((products[i].regularPrice - products[i].salePrice) /
+                                                products[i].regularPrice * 100).toFixed(0) %> % OFF)
+                                        </span>
+                                        <% } else { %>
+                                            <span class="regular-price fw-bold ">₹<%= products[i].regularPrice %></span>
+                                            <% } %>
+                                </div>
+
+                                <div class="button-section">
+                                    <button class="cart-btn" data-product-id="<%= products[i]._id %>">Add to
+                                        Cart</button>
+                                    <button class="wishlist-btn" onclick="addToWishlist('<%= products[i]._id %>')">Add
+                                        to Wishlist</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <% } %>
+                    <% } %>
             </div>
+
         </div>
     </div>
-    
-        </div>
+
+    </div>
     </div>
     </div>
 
     <%- include("../../views/partials/user/footer") %>
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
-            document.querySelectorAll('.cart-btn').forEach(button => {
-                button.addEventListener('click', async (event) => {
-                    const productId = event.target.getAttribute('data-product-id');
-                    const quantity = 1;
-
-                    try {
-                        const response = await fetch('/cart/add/', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ productId, quantity }),
-                        });
-                        const data = await response.json();
-                        Swal.fire(data.message === 'Product added to cart' ? 'Success' : 'Error', data.message, data.message === 'Product added to cart' ? 'success' : 'error');
-                    } catch (error) {
-                        Swal.fire('Error', 'Failed to add product to cart. Please try again.', 'error');
-                    }
-                });
-            });
-
             document.querySelector('#sort').addEventListener('change', (e) => {
                 let url = '/shop?sort=' + e.target.value;
                 ['priceMin', 'priceMax', 'category', 'status'].forEach(param => {
@@ -179,9 +194,162 @@
                 });
                 window.location.href = url;
             });
+
+
+
+
+
+            document.querySelectorAll('.cart-btn').forEach(button => {
+                button.addEventListener('click', async (event) => {
+                    const productId = event.target.getAttribute('data-product-id');
+                    const userIsLoggedIn = Boolean(<%= user ? 'true' : 'false' %>); 
+
+                    if (!userIsLoggedIn) {
+                        
+                        Swal.fire({
+                            title: 'Please Log In',
+                            text: 'You must be logged in to add items to your cart.',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Log In',
+                            cancelButtonText: 'Cancel',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = '/login'; 
+                            }
+                        });
+                        return; 
+                    }
+
+                   
+                    try {
+                        const response = await fetch('/cart/add', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ productId, quantity: 1 }), // Default quantity is 1
+                        });
+
+                        // Handle response
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.message === 'Product added to cart') {
+                                Swal.fire('Success', data.message, 'success');
+                            } else {
+                                Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+                            }
+                        } else {
+                            const data = await response.json();
+                            Swal.fire('Error', data.message || 'Failed to add product to cart. Please try again.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'Failed to add product to cart. Please try again.', 'error');
+                    }
+                });
+            });
+
+
+
+            async function addToWishlist(productId) {
+                console.log("Attempting to add to wishlist:", productId)
+                $.ajax({
+
+                    url: '/addToWishlist',
+                    method: 'POST',
+                    data: { productId: productId },
+                    success: (response) => {
+                        if (response.status) {
+
+                            Swal.fire({
+                                title: 'Added to wishlist',
+                                text: 'The product has been added to your wishlist',
+                                icon: 'success',
+                                timer: 2000
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Already in Wishlist",
+                                text: response.message,
+                                icon: 'info',
+                                timer: 2000,
+                            })
+                        }
+                    },
+                    error: (error) => {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'There was an error adding the product to your Wishlist',
+                            timer: 2000
+                        })
+                    }
+
+                })
+            }
         </script>
 
         <style>
+            .status-section {
+                margin: 10px 0;
+                text-align: center;
+            }
+
+            .status {
+                font-size: 14px;
+                font-weight: bold;
+                padding: 5px 10px;
+                border-radius: 5px;
+                display: inline-block;
+            }
+
+            .status.available {
+                background-color: #d4edda;
+                color: #155724;
+            }
+
+            .status.out-of-stock {
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+
+
+            .product-img-action-wrap {
+                position: relative;
+            }
+
+            .wishlist-icon {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                z-index: 10;
+                /* Ensure it stays above the image */
+            }
+
+            .wishlist-icon i {
+                font-size: 24px;
+                /* Adjust size if needed */
+                color: #fff;
+                /* White color for the heart */
+            }
+
+            .wishlist-icon .filled-heart {
+                color: #e74c3c;
+                /* Red color for filled heart */
+            }
+
+            .wishlist-icon .empty-heart {
+                color: #fff;
+                /* White color for empty heart */
+            }
+
+            /* Optional: Hover effect for the heart */
+            .wishlist-icon:hover i {
+                transform: scale(1.1);
+                /* Slightly increase size on hover */
+                transition: transform 0.2s ease-in-out;
+            }
+
             .product-card {
                 display: flex;
                 flex-direction: column;
@@ -239,9 +407,17 @@
                 margin-top: 15px;
             }
 
-            .cart-btn,
-            .wishlist-btn {
+            .cart-btn {
                 background-color: #007bff;
+                color: #fff;
+                padding: 8px 16px;
+                font-size: 14px;
+                border-radius: 5px;
+                transition: background-color 0.3s;
+            }
+
+            .wishlist-btn {
+                background-color: #3b5d50;
                 color: #fff;
                 padding: 8px 16px;
                 font-size: 14px;
@@ -264,4 +440,8 @@
                     align-items: center;
                 }
             }
-        </style> 
+
+            .container .row {
+                margin-right: 0;
+            }
+        </style>

@@ -1,0 +1,209 @@
+<%- include("../../views/partials/admin/header") %>
+<div class="container mt-5">
+  <h2 class="text-center">Sales Report</h2>
+
+  <!-- Sales Report Filter Section -->
+  <div class="mb-4">
+    <form action="/admin/salesReport" method="GET" class="form-inline flex-wrap">
+      <div class="form-group mr-3 mb-3">
+        <label for="dateFilter" class="mr-2">Filter By:</label>
+        <select name="dateFilter" id="dateFilter" class="form-control">
+          <option value="daily" <%= dateFilter === 'daily' ? 'selected' : '' %>>Daily</option>
+          <option value="weekly" <%= dateFilter === 'weekly' ? 'selected' : '' %>>Weekly</option>
+          <option value="monthly" <%= dateFilter === 'monthly' ? 'selected' : '' %>>Monthly</option>
+          <option value="yearly" <%= dateFilter === 'yearly' ? 'selected' : '' %>>Yearly</option>
+          <option value="custom" <%= dateFilter === 'custom' ? 'selected' : '' %>>Custom Date Range</option>
+        </select>
+      </div>
+
+      <div class="form-group mr-3 mb-3 custom-date-range" <%= dateFilter !== 'custom' ? 'style="display:none;"' : '' %>>
+        <label for="startDate" class="mr-2">Start Date:</label>
+        <input type="date" name="startDate" class="form-control" value="<%= startDate %>">
+        <label for="endDate" class="mr-2">End Date:</label>
+        <input type="date" name="endDate" class="form-control" value="<%= endDate %>">
+      </div>
+
+      <button type="submit" class="btn btn-primary">Generate Report</button>
+    </form>
+  </div>
+
+  <!-- Sales Report Table -->
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Order ID</th>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Total Order Amount</th>
+          <th>Total Discount</th>
+          <th>Coupon Deduction</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (salesReport && salesReport.length > 0) { %>
+          <% salesReport.forEach(order => { %>
+            <% order.orderItems.forEach(item => { %>
+              <tr>
+                <td><%= new Date(order.createdOn).toLocaleDateString() %></td>
+                <td><%= order._id %></td>
+                <td><%= item.product ? item.product.productName : 'Unknown' %></td>
+                <td><%= item.quantity %></td>
+                <td>₹<%= order.totalPrice.toFixed(2) %></td>
+                <td>₹<%= order.discount.toFixed(2) %></td>
+                <td>₹<%= order.couponDiscount.toFixed(2) %></td>
+              </tr>
+            <% }); %>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td colspan="7" class="text-center">
+              
+              <p>No sales data available for the selected period.</p>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+      <% if (salesReport && salesReport.length > 0) { %>
+        <tfoot>
+          <tr>
+            <th colspan="4" class="text-right">Page Totals:</th>
+            <th>₹<%= salesReport.reduce((sum, order) => sum + order.totalPrice, 0).toFixed(2) %></th>
+            <th>₹<%= salesReport.reduce((sum, order) => sum + order.discount, 0).toFixed(2) %></th>
+            <th>₹<%= salesReport.reduce((sum, order) => sum + order.couponDiscount, 0).toFixed(2) %></th>
+          </tr>
+        </tfoot>
+      <% } %>
+    </table>
+  </div>
+
+  <!-- Overall Sales Summary -->
+  <div class="row summary-section">
+    <div class="col-md-4 col-12 mb-3">
+      <h4>Overall Sales Count: <%= overall.overallSalesCount %></h4>
+    </div>
+    <div class="col-md-4 col-12 mb-3">
+      <h4>Overall Order Amount: ₹<%= overall.totalRevenue.toFixed(2) %></h4>
+    </div>
+    <div class="col-md-4 col-12 mb-3">
+      <h4>Overall Discounts: ₹<%= overall.totalDiscount.toFixed(2) %></h4>
+    </div>
+    <div class="col-md-4 col-12 mb-3">
+      <h4>Coupon Deductions: ₹<%= overall.couponDeductions.toFixed(2) %></h4>
+    </div>
+    <div class="col-md-4 col-12 mb-3">
+      <h4>Total Quantity Sold: <%= overall.totalQuantity %></h4>
+    </div>
+  </div>
+
+  <!-- Report Download Buttons -->
+  <button class="btn btn-success" id="downloadPdfBtn" <%= salesReport.length > 0 ? '' : 'disabled' %>>
+    <a href="/admin/downloadSalesReport?format=pdf&dateFilter=<%= dateFilter %>&startDate=<%= startDate %>&endDate=<%= endDate %>">
+        Download as PDF
+    </a>
+</button>
+<button class="btn btn-success" id="downloadExcelBtn" <%= salesReport.length > 0 ? '' : 'disabled' %>>
+    <a href="/admin/downloadSalesReport?format=excel&dateFilter=<%= dateFilter %>&startDate=<%= startDate %>&endDate=<%= endDate %>">
+        Download as Excel
+    </a>
+</button>
+
+  <!-- Pagination -->
+  <div class="pagination-container mt-4">
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center mb-20">
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+            <a class="page-link" href="?page=<%= i %>&dateFilter=<%= dateFilter %>&startDate=<%= startDate %>&endDate=<%= endDate %>">
+              <%= i %>
+            </a>
+          </li>
+        <% } %>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<%- include("../../views/partials/admin/footer") %>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  // JavaScript to handle date range visibility and input validation
+  document.getElementById('dateFilter').addEventListener('change', function() {
+    const customDateRangeDiv = document.querySelector('.custom-date-range');
+    customDateRangeDiv.style.display = this.value === 'custom' ? 'block' : 'none';
+  });
+
+  document.querySelector('form').addEventListener('submit', function(event) {
+    const dateFilter = document.getElementById('dateFilter').value;
+    if (dateFilter === 'custom') {
+      const startDate = new Date(document.querySelector('[name="startDate"]').value);
+      const endDate = new Date(document.querySelector('[name="endDate"]').value);
+      if (startDate > endDate) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid Date Range',
+          text: 'Start date cannot be later than the end date.',
+        });
+        event.preventDefault();
+      }
+    }
+  });
+
+ // Download functionality
+const setupDownload = (buttonId, format) => {
+  document.getElementById(buttonId).addEventListener('click', function() {
+    const dateFilter = document.getElementById('dateFilter').value;
+    const startDate = document.querySelector('[name="startDate"]').value;
+    const endDate = document.querySelector('[name="endDate"]').value;
+
+    const queryParams = new URLSearchParams({
+      format: format,
+      dateFilter: dateFilter,
+      startDate: startDate,
+      endDate: endDate
+    });
+
+    Swal.fire({
+      icon: 'info',
+      title: `Downloading ${format.toUpperCase()}...`,
+      text: 'Your sales report is being prepared.',
+      showConfirmButton: false,
+      timer: 1500
+    });
+
+    window.location.href = `/admin/downloadSalesReport?${queryParams.toString()}`;
+  });
+};
+
+setupDownload('downloadPdfBtn', 'pdf');
+setupDownload('downloadExcelBtn', 'excel');
+
+</script>
+
+<style>
+  .d-flex {
+    display: flex;
+    align-items: center;
+  }
+
+  .mr-2 {
+    margin-right: 0.5rem;
+  }
+
+  .custom-date-range {
+    display: none;
+  }
+
+  .pagination-container {
+    margin-top: 20px;
+  }
+
+  .summary-section h4 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+</style>

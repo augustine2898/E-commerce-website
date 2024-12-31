@@ -185,19 +185,18 @@ const removeProductOffer = async (req, res) => {
             return res.json({ status: false, message: 'Product not found.' });
         }
         console.log(findProduct.originalSalePrice)
-        // Check if originalSalePrice exists
+      
         if (findProduct.originalSalePrice) {
             
             findProduct.salePrice = findProduct.originalSalePrice;
         } else {
-            // If no original sale price exists, reset to the regular price
+           
             findProduct.salePrice = findProduct.regularPrice;
         }
 
-        // Remove the offer by setting productOffer to 0
+        
         findProduct.productOffer = 0;
 
-        // Save the updated product
         await findProduct.save();
 
         res.json({ status: true, message: 'Offer removed successfully.' });

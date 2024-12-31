@@ -5,6 +5,7 @@ const userController = require('../controllers/user/userControllers');
 const profileController= require("../controllers/user/profileController")
 const cartController = require("../controllers/user/cartController")
 const checkoutController=require("../controllers/user/checkoutController")
+const wishlistController=require("../controllers/user/wishlistController")
 const {userAuth,adminAuth}= require("../middlewares/auth")
 router.get("/pageNotFound", userController.pageNotFound);
 const User = require("../models/userSchema");
@@ -71,21 +72,36 @@ router.get('/edit-profile',userAuth,profileController.getEditProfile);
 router.post('/edit-profile', userAuth,profileController.updateProfile);
 router.get('/order/:orderId',userAuth,profileController.Orderdetails)
 router.post('/cancelOrder/:id',userAuth, profileController.cancelOrder);
-//router.get('/returnOrder/:id',userAuth, profileController.returnOrder);
+router.post('/returnOrder/:id',userAuth, profileController.returnOrder);
+router.get('/downloadInvoice/:orderId',userAuth, profileController.downloadInvoice);
 
 //Cart Management 
 router.get('/cart',userAuth,cartController.getMyCart)
 router.post('/cart/add',userAuth, cartController.addToCart);
 router.patch('/cart/remove',userAuth,cartController.removeProductFromCart);
 router.post('/cart/update',userAuth,cartController.updateCart)
-
+router.post('/apply-coupon',userAuth,cartController.applyCoupon)
+router.post('/remove-coupon', userAuth,cartController.removeCoupon)
 
 //Checkout Mangement 
 router.get('/checkout',userAuth,checkoutController.getCheckoutPage);
 router.post('/checkout/place-order', checkoutController.placeOrder);
 router.get('/editAddresscheckout/:id', userAuth, checkoutController.getEditAddress);
 router.post('/editAddresscheckout/:id', userAuth,checkoutController.postEditAddress);
+router.post('/verify-payment',userAuth,checkoutController.verifyPayment);
+router.post("/checkoutaddAddress",userAuth,checkoutController.postaddAddress)
+router.post('/retryPayment/:orderId', checkoutController.retryPayment)
+//router.post('/deleteorder',userAuth,checkoutController.deleteorder)
 
+ 
+
+
+
+//Wishlist Management 
+
+router.get('/wishlist',userAuth,wishlistController.getWishlist)
+router.post('/addToWishlist',userAuth,wishlistController.addToWishlist)
+router.get('/removeFromWishlist',userAuth,wishlistController.removeProduct)
 
 
 

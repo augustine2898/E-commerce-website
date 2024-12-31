@@ -5,7 +5,12 @@ const customerController = require("../controllers/admin/customerController");
 const categoryController = require("../controllers/admin/categoryController")
 const productController = require("../controllers/admin/productController");
 const orderController = require("../controllers/admin/orderController");
+const couponController = require("../controllers/admin/couponController")
+const refferalController=require("../controllers/admin/refferalController")
+const salesController=require("../controllers/admin/salesController")
+const dashboardController=require("../controllers/admin/dashboardContorller")
 const { userAuth, adminAuth } = require("../middlewares/auth");
+
 const multer =require('multer');
 const storage =require("../helpers/multer");
 const uploads = multer ({storage:storage});
@@ -54,4 +59,26 @@ router.delete("/removeProduct/:id", adminAuth, productController.removeProduct);
 router.get('/order',adminAuth,orderController.getAllOrders);
 router.post('/orders/updateStatus/:id',adminAuth,orderController.updateOrderStatus)
 
+
+//Coupon Management 
+
+router.get('/coupon',adminAuth,couponController.loadCoupon);
+router.post("/createCoupon",adminAuth,couponController.createCoupon);
+router.get("/editCoupon",adminAuth,couponController.editCoupon);
+router.post("/updateCoupon",adminAuth,couponController.updateCoupon);
+router.get("/deletecoupon",adminAuth,couponController.deleteCoupon);
+
+
+//Refferal Management 
+router.get("/refferal",adminAuth,refferalController.refferal)
+router.post('/generateReferral',adminAuth,refferalController.createRefferal)
+router.delete("/deleteReferral/:id",adminAuth,refferalController.deleteReferral)
+
+//Sales Management 
+
+router.get("/salesReport",adminAuth,salesController.getSalesReport)
+router.get('/downloadSalesReport', adminAuth,salesController.downloadSalesReport);
+
+//dashboard Management 
+router.get('/dashboard',adminAuth,dashboardController.dashboard)
 module.exports = router

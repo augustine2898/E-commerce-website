@@ -20,13 +20,13 @@ const pageNotFound = async (req, res) => {
 const loadSignup = async (req, res) => {
 
     try {
-        // Clear the session userData to ensure fields are empty
+       
         req.session.userData = null;
 
         const message = req.session.message || null; 
         req.session.message = null; 
 
-        // Define the variables to pass to the EJS template
+        
         const { name = '', phone = '', email = '' } = req.session.userData || {};
 
         return res.render('signup', { name, phone, email, message }); 
@@ -352,26 +352,37 @@ const deleteReview = async (req, res) => {
 
 
 
-
-
-
-
-
-
-
 const loadShopping = async (req, res) => {
     try {
+        // Extract query parameters
         const { sort, priceMin, priceMax, category, status, search } = req.query;
 
-        // Build the query
+        // Initialize the query object for filtering
         let query = { isBlocked: false };
-        if (priceMin && priceMax) query.salePrice = { $gte: priceMin, $lte: priceMax };
-        if (category) query.category = category;
-        if (search) query.productName = { $regex: new RegExp(search, 'i') };
-        if (status === 'Available') query.quantity = { $gt: 0 };
-        if (status === 'Out of Stock') query.quantity = 0;
 
-        
+        // Price range filter
+        if (priceMin && priceMax) {
+            query.salePrice = { $gte: parseFloat(priceMin), $lte: parseFloat(priceMax) };
+        }
+
+        // Category filter
+        if (category) {
+            query.category = category;
+        }
+
+        // Search filter
+        if (search) {
+            query.productName = { $regex: new RegExp(search, 'i') };
+        }
+
+        // Status filter (Available or Out of Stock)
+        if (status === 'Available') {
+            query.quantity = { $gt: 0 };
+        } else if (status === 'Out of Stock') {
+            query.quantity = 0;
+        }
+
+        // Sorting options
         const sortOptions = {
             aToZ: { productName: 1 },
             zToA: { productName: -1 },
@@ -380,37 +391,50 @@ const loadShopping = async (req, res) => {
             newArrivals: { createdAt: -1 }
         };
 
-        const sortQuery = sortOptions[sort] || {}; // Default to no sorting if `sort` is undefined
+        // Determine sorting criteria
+        const sortQuery = sortOptions[sort] || sortOptions.newArrivals;
 
-        // Fetch products and categories
+        // Fetch filtered, sorted, and paginated products
         const products = await Product.find(query)
             .sort(sortQuery)
-            .collation({ locale: 'en', strength: 1 }) // Ensure case-insensitive sorting
+            .collation({ locale: 'en', strength: 1 }) // Case-insensitive sorting
             .populate({ path: 'category', match: { isListed: true } });
-        console.log(products)
+
+        // Fetch all categories for filtering options
         const categories = await Category.find({ isListed: true });
 
-        // Fetch user if logged in
+        // Retrieve user information, if available
         const userId = req.session.user;
         const user = userId ? await User.findById(userId) : null;
 
-        // Render the shopping page
+        let wishlistProductIds = [];
+        if (user) {
+            wishlistProductIds = user.wishlist;  // Assuming 'wishlist' is an array of product IDs in the user model
+        }
+
+        // Render the shop page with the required data
         return res.render('shop', {
-            products,
-            user,
-            currentPage: 'shop',
-            cat: categories,
-            sort,
-            priceMin,
-            priceMax,
-            status,
-            searchQuery: search || ''
+            products,                      
+            user,                         
+            currentPage: 'shop',           
+            cat: categories,               
+            category: category || '',      
+            sort: sort || 'default',       
+            priceMin: priceMin || '',      
+            priceMax: priceMax || '',      
+            status: status || '',         
+            searchQuery: search || ''   ,   
+            wishlistProductIds
         });
+
     } catch (error) {
-        console.log('Shopping page not loading:', error);
+        console.error('Error loading shopping page:', error);
         res.status(500).send('Server Error');
     }
 };
+
+
+
 
 
 
@@ -447,7 +471,6 @@ const login = async (req, res) => {
             return res.render("login", { message: "User not found", email });
         }
 
-        // Check if the user is registered via Google
         if (findUser.isGoogleUser) {
             return res.render("login", { message: "User already exists. Please sign in using Google.", email });
         }
@@ -456,8 +479,6 @@ const login = async (req, res) => {
             return res.render("login", { message: "User is blocked by admin", email });
         }
 
-        // At this point, we can assume the user is not a Google user
-        // Check if the password is defined for non-Google users
         if (!findUser.password) {
             console.error("No password found for user:", findUser.email);
             return res.render("login", { message: "Login failed. This account is associated with Google sign-in. Please sign in using Google.", email });
@@ -470,8 +491,8 @@ const login = async (req, res) => {
             return res.render("login", { message: "Incorrect Password", email });
         }
 
-        req.session.user = findUser._id; // Store user ID in session
-        res.redirect("/"); // Redirect on successful login
+        req.session.user = findUser._id; 
+        res.redirect("/"); 
     } catch (error) {
         console.error("Login error:", error.message); // Log specific error details for debugging
         res.render("login", { message: "Login failed. Please try again later.", email: req.body.email });
@@ -496,10 +517,10 @@ const loadHomepage = async (req, res) => {
             category: { $in: categories.map(category => category._id) },
         });
 
-        // Sort the products by creation date
+       
         productData.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
 
-        // Slice the array to get the first 4 products
+        
         productData = productData.slice(0, 4);
 
         let user = null;
@@ -511,8 +532,12 @@ const loadHomepage = async (req, res) => {
             }
         }
 
-        // Render the homepage with the fetched data
-        return res.render("home", { user: user, products: productData, currentPage: 'home' });
+        let wishlistProductIds = [];
+        if (user) {
+            wishlistProductIds = user.wishlist;  
+        }
+
+        return res.render("home", { user: user, products: productData, currentPage: 'home',wishlistProductIds });
 
     } catch (error) {
         console.log('Home page not found', error);

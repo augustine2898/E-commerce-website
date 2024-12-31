@@ -1,0 +1,477 @@
+<%- include("../../views/partials/admin/header") %>
+
+<style>
+    * {
+    box-sizing: border-box; /* Ensures padding and border don't affect element's width/height */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.filter-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.filter-container select {
+    padding: 5px;
+    font-size: 16px;
+}
+
+.dashboard-stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.chart-container {
+    flex: 1; /* Ensures the chart container takes up remaining space */
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.box-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    padding: 0;
+    width: 100%;
+    gap: 20px; /* Add space between the list items */
+}
+
+.box-info li {
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    width: 30%;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds subtle shadow for better separation */
+}
+
+.box-info li i {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+.box-info li .text h3 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.box-info li .text p {
+    font-size: 16px;
+    margin: 0;
+}
+
+
+.top-products, .top-categories {
+    width: 48%;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h3 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+table th, table td {
+    padding: 12px;
+    text-align: left;
+}
+
+table th {
+    background-color: #f7f7f7;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.order img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.status.completed {
+    color: green;
+}
+
+.status.pending {
+    color: orange;
+}
+
+.status.canceled {
+    color: red;
+}
+
+.ledger-book {
+    width: 100%;
+    margin-top: 20px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ledger-book h3 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.ledger-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ledger-table th, .ledger-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.ledger-table th {
+    background-color: #f7f7f7;
+}
+
+.ledger-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.ledger-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+/* Ensure responsiveness */
+@media (max-width: 768px) {
+    .dashboard-stats {
+        flex-direction: column;
+    }
+
+    .box-info li {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .top-products, .top-categories {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .filter-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-container select {
+        margin-top: 10px;
+    }
+}
+
+
+
+</style>
+
+<main>
+    <div class="head-title">
+        <div class="left">
+            <h1>Dashboard</h1>
+        </div>
+    </div>
+
+    <!-- Overall Dashboard Stats -->
+    <div class="box-info">
+        <li>
+            <i class='bx bxs-calendar-check'></i>
+            <span class="text">
+                <h3><%= stats.totalOrders %></h3>
+                <p>Total Orders</p>
+            </span>
+        </li>
+        <li>
+            <i class='bx bxs-group'></i>
+            <span class="text">
+                <h3><%= stats.visitors %></h3>
+                <p>Visitors</p>
+            </span>
+        </li>
+        <li>
+            <i class='bx bxs-dollar-circle'></i>
+            <span class="text">
+                <h3>$<%= stats.totalSales.toFixed(2) %></h3>
+                <p>Total Sales</p>
+            </span>
+        </li>
+       
+        <li>
+            <i class='bx bxs-x-circle'></i>
+            <span class="text">
+                <h3><%= stats.canceledOrdersCount %></h3>
+                <p>Canceled Orders</p>
+            </span>
+        </li>
+        
+        <li>
+            <i class='bx bxs-refresh'></i>
+            <span class="text">
+                <h3><%= stats.returnedOrdersCount %></h3>
+                <p>Returned Orders</p>
+            </span>
+        </li>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="dashboard-stats">
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3>Sales Overview</h3>
+                <!-- Filter specific to the chart -->
+                <form method="get" action="/admin/dashboard" class="chart-filter-form">
+                    <label for="chartFilter">Filter:</label>
+                    <select id="chartFilter" name="filter" onchange="this.form.submit()">
+                        <option value="yearly" <%= filter === 'yearly' ? 'selected' : '' %>>Yearly</option>
+                        <option value="monthly" <%= filter === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                        <option value="weekly" <%= filter === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                    </select>
+                </form>
+            </div>
+            <canvas id="salesChart" width="400" height="200"></canvas>
+        </div>
+
+        <div class="top-products">
+            <h3>Top Selling Products</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Sales</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% topProducts.forEach(product => { %>
+                        <tr>
+                            <td style="display: flex; align-items: center;">
+                                <% if (product.productImage && product.productImage[0]) { %>
+                                    <img 
+                                        src="<%= '/uploads/product-image/resized/' + product.productImage[0] %>" 
+                                        alt="<%= product.productName %>" 
+                                        style="width: 50px; height: 50px; margin-right: 10px; border-radius: 5px;"/>
+                                <% } else { %>
+                                    <span>No Image</span>
+                                <% } %>
+                                <%= product.productName || 'No Name Available' %>
+                            </td>
+                            
+                            <td>₹<%= product.totalSales.toFixed(2) %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="top-categories">
+            <h3>Top Selling Categories</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Sales</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% topCategories.forEach(category => { %>
+                        <tr>
+                            <td><%= category.categoryName %></td> <!-- Display category name -->
+                            <td>₹<%= category.totalSales.toFixed(2) %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Orders Section -->
+    <div class="table-data">
+        <div class="order">
+            <div class="head">
+                <h3>Recent Orders</h3>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Date Order</th>
+                        <th>Status</th>
+                        <th>Products</th>
+                        <th>Category</th> <!-- Added column for category -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <% recentOrders.forEach(order => { %>
+                        <tr>
+                            <td>
+                                <p><%= order.user %></p>
+                            </td>
+                            <td><%= order.date %></td>
+                            <td>
+                                <span class="status <%= order.status.toLowerCase() %>">
+                                    <%= order.status %>
+                                </span>
+                            </td>
+                            <td>
+                                <% order.products.forEach(product => { %>
+                                    <div>
+                                        <strong><%= product.productName %></strong>
+                                    </div>
+                                <% }) %>
+                            </td>
+                            <td> 
+                                <% order.products.forEach(product => { %>
+                                    <div>
+                                        <%= product.category %> <!-- Display category separately for each product -->
+                                    </div>
+                                <% }) %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-container">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mb-20">
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                    <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                        <a class="page-link" href="?page=<%= i %>">
+                            <%= i %>
+                        </a>
+                    </li>
+                <% } %>
+            </ul>
+        </nav>
+    </div>
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const filter = "<%= filter %>";  // Get filter from EJS
+    
+    // Define the current month and week
+    const currentMonth = new Date().getMonth() + 1;  // 1-based index (January is 1)
+    const currentWeek = Math.ceil((new Date().getDate() + 1) / 7); // Approximate current week of the month
+
+    // Prepare labels based on the selected filter
+    const labels = <%- JSON.stringify(salesData.map(data => {
+        if (filter === 'yearly') {
+            // For yearly, show all months (January to December)
+            const month = new Date(data._id).toLocaleString('default', { month: 'long' });
+            return month; // Show months as labels (e.g., "January", "February", etc.)
+        } else if (filter === 'monthly') {
+            const currentMonthName = new Date().toLocaleString('default', { month: 'long' });
+            return currentMonthName; 
+        } else if (filter === 'weekly') {
+            
+            const currentDate = new Date();
+            const weekNumber = Math.ceil(currentDate.getDate() / 7);  // Calculate week of the month (1 to 4)
+            const monthName = currentDate.toLocaleString('default', { month: 'long' }); // Get current month name
+            const year = currentDate.getFullYear(); // Get current year
+            return `Week ${weekNumber} (${monthName}, ${year})`;
+        } else {
+            return data._id; // Fallback
+        }
+    })) %>;
+
+    console.log(labels);  // Log labels for debugging
+
+    // Prepare data for sales corresponding to labels
+    const data = <%- JSON.stringify(salesData.map(data => data.totalSales)) %>;
+    console.log(data);  // Log sales data for debugging
+
+    // Define chart titles based on the filter
+    const chartTitle = {
+        yearly: "Sales by Month",
+        monthly: "Sales by Current Month",
+        weekly: "Sales by Current Week"
+    };
+
+    // Create the chart
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    const salesChart = new Chart(ctx, {
+        type: 'bar',  // Bar chart type
+        data: {
+            labels: labels,  // Dynamically populated labels
+            datasets: [{
+                label: chartTitle[filter],  // Set chart label dynamically based on filter
+                data: data,  // Corresponding sales data for the labels
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+            }],
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: chartTitle[filter],  // Dynamic chart title
+                    font: {
+                        size: 16
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: filter === 'yearly' ? 'Months' : filter === 'monthly' ? 'Current Month' : 'Current Week',  // Set the X-axis title dynamically
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Sales (in INR)'  // Y-axis label
+                    }
+                },
+            },
+        },
+    });
+</script>
+
+
+
+<%- include("../../views/partials/admin/footer") %>

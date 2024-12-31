@@ -3,6 +3,7 @@ const app = express();
 const path = require('path');
 const passport =require("./config/passport");
 const session = require("express-session");
+const MongoStore = require('connect-mongo');
 const env = require("dotenv").config();
 const db = require('./config/db');
 const userRouter = require("./routes/userRouter");
@@ -16,11 +17,12 @@ app.use(session({
     resave:false,
     saveUninitialized:true,
     cookie:{
-        secure:false,//make true during production
+        secure:false,
         httpOnly:true,
         maxAge:72*60*60*1000
 
-    }
+    },
+    store: MongoStore.create({mongoUrl:process.env.MONGODB_URI})
 }))
 
 app.use(passport.initialize());
