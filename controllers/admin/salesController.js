@@ -3,10 +3,6 @@ const Order = require("../../models/orderSchema");
 const ExcelJS = require('exceljs');
 const PDFDocument = require('pdfkit');
 
-
-
-
-
 const getSalesReport = async (req, res) => {
     const { dateFilter, startDate, endDate, page = 1 } = req.query;
 
@@ -105,8 +101,6 @@ const getSalesReport = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 };
-
-
 
 const downloadSalesReport = async (req, res) => {
     const { dateFilter, startDate, endDate } = req.query;
@@ -273,13 +267,6 @@ const downloadSalesReport = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 };
-
-
-
-
-
-
-
 
 
 module.exports = {

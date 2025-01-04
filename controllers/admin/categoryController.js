@@ -1,9 +1,5 @@
 const Category = require("../../models/CategorySchema");
 const Product = require("../../models/productSchema");
-
-
-
-
 const categoryInfo = async (req, res) => {
     try {
         const search = req.query.search || ""; 
@@ -36,17 +32,13 @@ const categoryInfo = async (req, res) => {
             currentPage: page,
             totalPages: totalPages,
             totalCategories: totalCategories,
-            search: search, // Pass the search term to the EJS template
+            search: search,  
         });
     } catch (error) {
         console.error(error);
         res.redirect("/pageerror");
     }
 };
-
-
-
-
 
 const removeCategory = async (req, res) => {
     const { id } = req.params; // Assuming you're using a route parameter for the category ID
@@ -64,19 +56,14 @@ const removeCategory = async (req, res) => {
         return res.status(500).json({ error: "Internal server error" });
     }
 };
-
 const addCategoryOffer = async (req, res) => {
-
     try {
         const percentage = parseInt(req.body.percentage);
         const categoryId = req.body.categoryId;
-        // Validates the percentage
         if (isNaN(percentage) || percentage < 0 || percentage > 100) {
             return res.status(400).json({ status: false, message: "Percentage must be a number between 0 and 100." });
         }
-
         const category = await Category.findById(categoryId);
-
         if (!category) {
             return res.status(404).json({ status: false, message: "Category not found" })
         }
@@ -151,8 +138,6 @@ const getUnlistCategory = async (req, res) => {
     }
 };
 
-
-
 const getEditCategory =async(req,res)=>{
     try {
         const id =req.query.id;
@@ -219,10 +204,6 @@ const editCategory = async (req, res) => {
         return res.status(500).json({ success: false, error: "Internal server error." });
     }
 };
-
-
-
-
 
 module.exports = {
     categoryInfo,

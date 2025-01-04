@@ -1,0 +1,226 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f5f6fa;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header,
+.footer {
+    background-color: #fff;
+    width: 100%;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.order-container {
+    max-width: 1100px;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    margin: 30px auto;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.order-header h2 {
+    font-size: 26px;
+    color: #333;
+}
+
+.order-status .status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #fff;
+    margin-right: 8px;
+}
+
+.status.paid {
+    background-color: #4caf50;
+}
+
+.status.ready-to-pickup {
+    background-color: #00bcd4;
+}
+
+.order-date {
+    font-size: 14px;
+    color: #888;
+}
+
+.order-details-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.order-details,
+.customer-details,
+.shipping-address {
+    width: 100%;
+    max-width: 48%;
+}
+
+.order-details h3,
+.customer-details h3,
+.shipping-address h3 {
+    font-size: 20px;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.order-table th,
+.order-table td {
+    padding: 12px;
+    text-align: left;
+    color: #555;
+}
+
+.order-table thead th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+.order-table tfoot td {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.order-action-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: #ff5722;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+.order-action-btn:hover {
+    background-color: #e64a19;
+}
+
+.text-muted {
+    font-size: 14px;
+    color: #888;
+}
+
+.customer-info {
+    font-size: 14px;
+    color: #555;
+}
+
+.shipping-address p {
+    font-size: 14px;
+    color: #555;
+}
+
+/* Ensure Footer is always at the bottom */
+.footer {
+    margin-top: auto;
+}
+
+@media (max-width: 768px) {
+    .order-details-section {
+        flex-direction: column;
+    }
+
+    .order-details,
+    .customer-details,
+    .shipping-address {
+        max-width: 100%;
+    }
+}
+
+.badge-payment-pending {
+    background-color: #f0ad4e;
+    color: black;
+}
+
+.badge-paid {
+    background-color: #69f04e;
+    color: black;
+}
+
+.badge-processing {
+    background-color: #69f04e;
+    color: black;
+}
+.badge-shipped {
+    background-color: #5bc0de;
+    color: black;
+}
+
+.badge-delivered {
+    background-color: #5cb85c;
+    color: white;
+}
+
+.badge-canceled {
+    background-color: #d9534f;
+    color: white;
+}
+
+.badge-returned {
+    background-color: #d9534f;
+    /* Red background for returned status */
+    color: white;
+}
+
+.badge-return-request-canceled {
+background-color: #eedd48;
+color: white;
+}
+
+
+
+.original-price {
+    text-decoration: line-through;
+    color: #999;
+    margin-right: 10px;
+}
+
+.discounted-price {
+    color: #e74c3c;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.discount-percentage {
+    color: #27ae60;
+    font-size: 14px;
+}
+
+.regular-price {
+    font-weight: bold;
+    color: #333;
+}

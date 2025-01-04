@@ -2,6 +2,7 @@ const User =require("../models/userSchema");
 
 const userAuth = async (req, res, next) => {
     try {
+        console.log(req.session.user)
         if (req.session.user) {
             const user = await User.findById(req.session.user); // Ensure correct property (user ID) is checked
 
@@ -35,20 +36,52 @@ const userAuth = async (req, res, next) => {
 };
 
 
-const adminAuth =(req,res,next)=>{
-    User.findOne({isAdmin:true})
-    .then(data=>{
-        if(data){
-            next();
-        }else{
-            res.redirect("/admin/login")
+// const adminAuth =(req,res,next)=>{
+//     User.findOne({isAdmin:true})
+//     .then(data=>{
+//         if(data){
+//             next();
+//         }else{
+//             res.redirect("/admin/login")
+//         }
+//     })
+//     .catch(error=>{
+//         console.log("Error in adminauth middleware",error);
+//         res.status(500).send("internal Server Error");
+//     })
+// }
+
+
+const adminAuth = async (req, res, next) => {
+    try {
+        const userSession = req.session.admin;
+        console.log(userSession)
+        // If there's no session, redirect to admin login page
+        if (!userSession) {
+            return res.redirect("/admin/login");
         }
-    })
-    .catch(error=>{
-        console.log("Error in adminauth middleware",error);
-        res.status(500).send("internal Server Error");
-    })
-}
+
+        // Find user from the database using session user ID
+        const user = await User.findOne({_id:userSession});
+
+        if (user) {
+            // Check if the user is an admin
+            if (user.isAdmin) {
+                
+                return next();
+            } else {
+                // If the user is not an admin, redirect to admin login page
+                return res.redirect("/admin/login");
+            }
+        } else {
+            // If the user is not found, redirect to admin login page
+            return res.redirect("/admin/login");
+        }
+    } catch (error) {
+        console.error("Error in admin auth middleware:", error);
+        return res.status(500).send("Internal server error");
+    }
+};
 
 module.exports ={
     userAuth,

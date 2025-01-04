@@ -1,0 +1,55 @@
+.badge {
+    color: white;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 12px;
+    text-transform: capitalize;
+    display: inline-block;
+    min-width: 90px;
+    text-align: center;
+  }
+
+  .badge-paymentpending {
+    background-color: #f39c12;
+  }
+
+  .badge-processing {
+    background-color: #f1c40f;
+  }
+
+  .badge-shipped {
+    background-color: #3498db;
+  }
+
+  .badge-delivered {
+    background-color: #2ecc71;
+  }
+
+  .badge-paid {
+    background-color: #27ae60;
+  }
+
+  .badge-canceled {
+    background-color: #e74c3c;
+  }
+
+  .badge-returned {
+    background-color: #e74c3c;
+  }
+
+  .badge-return_requested {
+    background-color: #2980b9;
+  }
+
+  .badge-cancel_return_request {
+    background-color: #e67e22;
+  }
+
+  .d-flex {
+    display: flex;
+    align-items: center;
+  }
+
+  .mr-2 {
+    margin-right: 0.5rem;
+  }

@@ -1,6 +1,5 @@
 const User = require("../../models/userSchema");
-
-
+//Load Customer Page
 const customerinfo = async (req, res) => {
     try {
         const search = req.query.search || ""; 
@@ -61,11 +60,7 @@ const customerinfo = async (req, res) => {
         res.redirect("/pageerror");
     }
 };
-
-
-
-
-
+//Blocking customer
 const customerBlocked = async (req, res) => {
     try {
         let id = req.query.id;
@@ -82,7 +77,6 @@ const customerBlocked = async (req, res) => {
                     console.error('Session destroy error:', err);
                     return res.redirect("/pageerror");
                 }
-
                 console.log(`User with ID ${id} has been logged out and blocked.`);
                 // After destroying the session, redirect or send a response
                 res.clearCookie('connect.sid'); // Clear the session cookie
@@ -96,10 +90,6 @@ const customerBlocked = async (req, res) => {
         res.redirect("/pageerror");
     }
 };
-
-
-
-
 
 const customerUnblocked = async (req, res) => {
     try {
@@ -118,7 +108,6 @@ const customerUnblocked = async (req, res) => {
         res.redirect("/pageerror");
     }
 };
-
 
 module.exports = {
     customerinfo,

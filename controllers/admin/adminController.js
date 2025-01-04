@@ -6,11 +6,9 @@ const pageerror =async(req,res)=>{
     
     res.render("admin-error")
 }
-
 const page404 =async(req,res)=>{
     res.render("pagenotfound");
 }
-
 const loadLogin =(req,res)=>{
     
     if(req.session.admin){
@@ -19,7 +17,6 @@ const loadLogin =(req,res)=>{
     }
     res.render("admin-login",{message:null})
 }
-
 const login= async(req,res)=>{
     try {
         const {email,password} =req.body;
@@ -27,8 +24,8 @@ const login= async(req,res)=>{
         if(admin){
             const passwordMatch =bcrypt.compare(password,admin.password);
             if (passwordMatch){
-                req.session.admin = true;
-                return res.redirect("/admin");
+                req.session.admin = admin._id;
+                return res.redirect("/admin/dashboard");
             }else{
                 return res.redirect("/login",{message:"Incorrect Password",email});
             }
@@ -40,17 +37,6 @@ const login= async(req,res)=>{
         return res.redirect("/pageerror");
     }
 }
-
-const loadDashboard=async(req,res)=>{
-if(req.session.admin){
-    try {
-        res.render("dashboard");
-    } catch (error) {
-        res.redirect("/pageerror");
-    }
-}
-}
-
 const logout =async (req,res)=>{
     try {
         req.session.destroy(err=>{
@@ -66,11 +52,9 @@ const logout =async (req,res)=>{
         
     }
 }
-
 module.exports ={
     loadLogin,
     login,
-    loadDashboard,
     pageerror,
     logout,
     page404,

@@ -1,0 +1,578 @@
+.image-zoom-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    /* To prevent overflow of zoom effect */
+  }
+
+  .image-zoom-container img {
+    height: 400px;
+    object-fit: cover;
+    object-position: center;
+    /* Center the image */
+  }
+
+  .image-zoom-container::after {
+    opacity: 0;
+    /* Start hidden */
+    content: '';
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Optional: dark overlay */
+    background-image: var(--url);
+    background-size: 200%;
+    background-position: var(--zoom-x) var(--zoom-y);
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: opacity 0.3s ease;
+    /* Smooth fade-in/fade-out transition */
+  }
+
+  .image-zoom-container:hover::after {
+    opacity: 1;
+    /* Show zoom effect on hover */
+  }
+</style>
+
+<style>
+  /* General Styling */
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #ffffff;
+    color: #333;
+    line-height: 1.6;
+  }
+
+  /* Breadcrumbs */
+  .breadcrumbs {
+    margin: 20px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .breadcrumbs a {
+    color: #007bff;
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+
+  /* Product Detailed Page */
+  .product-detailed-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  /* Flexbox Layout for Details Section */
+  .product-details-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 40px;
+  }
+
+  .image-gallery-section {
+    flex: 1;
+    margin-right: 20px;
+    min-width: 300px;
+    max-width: 100%;
+  }
+
+  .image-gallery-section img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .thumbnails {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .thumbnails img {
+    width: 80px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: transform 0.2s;
+  }
+
+  .thumbnails img:hover {
+    transform: scale(1.1);
+    border: 2px solid #007bff;
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 5%;
+    /* or adjust based on your design */
+    opacity: 1;
+    /* Ensures they are fully visible */
+    /* Additional styles */
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Visible background for icons */
+    border-radius: 50%;
+    /* Round shape */
+  }
+
+  /* Use flex properties to position correctly */
+  .carousel-control-prev {
+    left: 10px;
+    /* Adjust as necessary */
+  }
+
+  .carousel-control-next {
+    right: 10px;
+    /* Adjust as necessary */
+  }
+
+
+  .product-info-section {
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .product-info-section h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  /* Responsive Text Size */
+  @media (max-width: 768px) {
+    .product-info-section h1 {
+      font-size: 22px;
+    }
+
+    .product-info-section {
+      margin: 20px 0;
+      /* Add spacing for mobile view */
+    }
+
+    .image-gallery-section {
+      margin-right: 0;
+      /* Remove margin for smaller screens */
+    }
+
+    .thumbnails img {
+      width: 60px;
+      /* Smaller thumbnail size for mobile */
+    }
+  }
+
+  .rating {
+    font-size: 16px;
+    color: #ff9900;
+    margin-bottom: 10px;
+  }
+
+  .price-section {
+    font-size: 24px;
+    color: #e74c3c;
+    margin: 10px 0;
+  }
+
+  /* Discount and Price Styling */
+  .discounted-price {
+    font-weight: bold;
+  }
+
+  .original-price {
+    text-decoration: line-through;
+    margin-left: 10px;
+    color: #888;
+  }
+
+  .discount-percentage {
+    font-weight: bold;
+    color: green;
+    margin-left: 10px;
+  }
+
+  .availability {
+    margin: 10px 0;
+  }
+
+  .regular-price {
+
+    color: #000000;
+  }
+
+  .in-stock {
+    color: green;
+  }
+
+  .out-of-stock {
+    color: red;
+  }
+
+  .discontinued {
+    color: orange;
+  }
+
+  .color-selection {
+    margin: 10px 0;
+  }
+
+  .add-to-cart-section {
+    margin: 20px 0;
+  }
+
+  .quantity button {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    width: 30px;
+    height: auto;
+    text-align: center;
+    transition: background-color 0.2s;
+  }
+
+  .quantity button:hover {
+    background-color: #2980b9;
+  }
+
+  .input-box {
+    width: 40px;
+    text-align: center;
+    border: none;
+    padding: 8px 10px;
+    font-size: 16px;
+    outline: none;
+  }
+
+  /* Hide the number input spin buttons */
+  .input-box::-webkit-inner-spin-button,
+  .input-box::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .input-box[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+
+  .product-description {
+    margin-top: 20px;
+  }
+
+  .product-description h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .product-card {
+    max-width: 98%;
+
+  }
+
+  /* Related products */
+  .row_product__filter {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+
+  }
+
+  .product-card {
+    display: flex;
+    margin: 4px;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 400px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Flexbox layout for product-info */
+.product-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 15px;
+    height: 100%;
+  }
+  
+  /* Add more space between elements */
+  .product-info h3 {
+    font-size: x-large;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .price-section {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    color: #e74c3c;
+    margin: 10px 0;
+  }
+
+  .product-card {
+    position: relative; /* Ensure the icon is positioned relative to the product card */
+  }
+  
+  .wishlist-icon {
+    position: absolute; /* Position it relative to the product card */
+    top: 10px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
+    z-index: 10; /* Ensure it stays above other elements */
+    cursor: pointer;
+    color: #ff0000; /* Set the default color for the icon */
+    font-size: 1.5rem; /* Adjust the size as needed */
+  }
+  
+  .wishlist-icon .filled-heart {
+    color: #ff0000; /* Set the color for filled hearts */
+  }
+  
+  .wishlist-icon .empty-heart {
+    color: #ccc; 
+  }
+  
+  .product-card img {
+    width: 100%; 
+    height: auto;
+    display: block; 
+  }
+  
+  
+  .wishlist-btn {
+    background-color: #3b5d50;
+  }
+  
+  .cart-btn {
+    background-color: #0275d8;
+  }
+  
+  .wishlist-btn:hover,
+  .cart-btn:hover {
+    background-color: #025aa5;
+  }
+  
+  .product-image {
+    height: 190px;
+
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .product-info {
+    padding: 15px;
+  }
+
+  h3 {
+    font-size: x-large;
+    text-align: center;
+  }
+
+  .price-section {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    color: #e74c3c;
+    margin: 10px 0;
+  }
+
+  .discounted-price {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+
+  .original-price {
+    text-decoration: line-through;
+    margin-right: 10px;
+    color: #888;
+    font-size: 16px;
+  }
+
+  .discount-percentage {
+    margin-right: 15px;
+    font-weight: bold;
+    font-size: 15px;
+    color: green;
+  }
+
+  .row_product__filter .regular-price {
+    margin-left: 100px;
+    color: #000000;
+  }
+
+  .wishlist-btn {
+    margin-top: auto;
+    padding: 5px 18px;
+    font-size: 14px;
+    background-color: #3b5d50;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: center;
+  }
+
+  .cart-btn {
+    margin-top: auto;
+    padding: 5px 31px;
+    font-size: 14px;
+    background-color: #0275d8;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: center;
+  }
+
+  .wishlist-btn:hover,
+  .cart-btn:hover {
+    background-color: #025aa5;
+  }
+
+  /* Media queries for smaller screens */
+  @media (max-width: 600px) {
+    .product-card {
+      max-width: 100%;
+    }
+
+    h3 {
+      font-size: 16px;
+    }
+
+    .price-section {
+      flex-direction: column;
+    }
+
+    .original-price,
+    .discount {
+      margin-left: 0;
+    }
+  }
+
+  /* Additional Media Query for further improvements on small devices */
+  @media (max-width: 480px) {
+    .product-details-container {
+      flex-direction: column;
+      /* Stack the sections vertically */
+    }
+
+    .image-gallery-section,
+    .product-info-section {
+      margin-right: 0;
+      /* Remove right margin */
+      margin-bottom: 20px;
+      /* Add bottom margin for spacing */
+    }
+
+    .thumbnails img {
+      width: 50px;
+      /* Further reduce thumbnail size */
+    }
+  }
+
+  .reviews-section {
+    margin-top: -226px;
+    
+    padding: 40px;
+
+  }
+
+  .existing-reviews {
+    margin-bottom: 20px;
+  }
+
+  .review-card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+  }
+
+  .review-rating span {
+    font-size: 16px;
+    color: #ff9900;
+    /* Gold color for stars */
+  }
+
+  .review-content p {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #333;
+  }
+
+  .review-date small {
+    font-size: 12px;
+    color: #888;
+  }
+
+  .review-form {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: #fff;
+  }
+
+  .review-form h3 {
+    margin-bottom: 10px;
+  }
+
+  .rating-input,
+  .comment-input {
+    margin-bottom: 15px;
+  }
+
+  .rating-input label,
+  .comment-input label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+  .comment-input textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .submit-review-button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .submit-review-button:hover {
+    background-color: #0056b3;
+  }
+
+  .before-footer-section {
+    padding: 0rem 0 12rem 0 !important;
+  }

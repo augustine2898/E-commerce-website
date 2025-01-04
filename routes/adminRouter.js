@@ -20,7 +20,7 @@ router.get("/page404", adminController.page404);
 //Login Management 
 router.get("/login", adminController.loadLogin);
 router.post("/login", adminController.login);
-router.get("/", adminAuth, adminController.loadDashboard);
+//router.get("/dashboard", adminAuth, adminController.loadDashboard);
 router.get("/logout", adminController.logout);
 
 //Customer Management 

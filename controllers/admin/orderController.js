@@ -33,7 +33,6 @@ const getAllOrders = async (req, res) => {
   }
 };
 
-
   const updateOrderStatus = async (req, res) => {
     try {
         const orderId = req.params.id;
@@ -94,17 +93,17 @@ const getAllOrders = async (req, res) => {
             
             if (order.paymentMethod === 'COD'||order.paymentMethod === "Razorpay") {
                 const user = order.user;
-                console.log('User:', user); 
+                
                 if (user) {
                     const amountToAdd = parseFloat(order.finalAmount);
-                    console.log('Amount to Add:', amountToAdd); t
                     if (!isNaN(amountToAdd) && amountToAdd > 0) {
                         console.log('Adding amount to wallet...'); 
                         user.wallet += amountToAdd;
                         await user.save();
-                        console.log('Wallet updated:', user.wallet); 
+                        
                     } else {
-                        console.error('Invalid finalAmount value:', order.finalAmount);
+                       
+                        return res.json({success:false,message:'Invalid finalAmount value'});
                     }
                 }
             }
@@ -124,11 +123,6 @@ const getAllOrders = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Failed to update order status' });
     }
 };
-
-
-
-
-
 
 module.exports = {
     getAllOrders,

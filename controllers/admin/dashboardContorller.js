@@ -2,28 +2,20 @@ const User = require("../../models/userSchema");
 const Category = require("../../models/CategorySchema");
 const Product = require("../../models/productSchema");
 const Order = require("../../models/orderSchema")
-const moment = require('moment');
-
 
 
 const dashboard = async (req, res) => {
     try {
-        const filter = req.query.filter || 'yearly'; // Default to 'yearly' if no filter is provided
-        console.log("Filter selected:", filter);
-
+        const filter = req.query.filter || 'yearly';
         const today = new Date();
         let startDate;
-
         if (filter === 'yearly') {
-
             startDate = new Date(today.getFullYear(), 0, 1);
             console.log('yearly', startDate);
         } else if (filter === 'monthly') {
-
             startDate = new Date(today.getFullYear(), today.getMonth(), 1);
             console.log('monthly', startDate);
         } else if (filter === 'weekly') {
-
             const dayOfWeek = today.getDay();
             const mondayOffset = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek;
             startDate = new Date(today.setDate(today.getDate() + mondayOffset));
@@ -31,8 +23,23 @@ const dashboard = async (req, res) => {
         } else {
             throw new Error("Invalid filter value");
         }
+        const currentPage = parseInt(req.query.page) || 1;
+        const itemsPerPage = 5;
+        const [
+            salesData,
+            totalOrder,
+            canceledOrdersCount,
+            returnedOrdersCount,
+            topProducts,
+            topCategories,
+            totalSalesResult,
+            visitors,
+            recentOrders,
+            totalItems,
 
-        const salesData = await Order.aggregate([
+        ] = await Promise.all([
+
+        Order.aggregate([
             {
                 $match: {
                     createdOn: { $gte: startDate },
@@ -66,20 +73,30 @@ const dashboard = async (req, res) => {
                 }
             },
             { $sort: { "_id": 1 } } // Sort in ascending order by date
-        ]);
+        ]),
+        Order.countDocuments({
+            status: {
+                $in: [
+                    'Processing',
+                    'Shipped',
+                    'Delivered',
+                    'Canceled',
+                    'Return Requested',
+                    'Returned',
+                    'Return Request Canceled',
+                    'Paid'
+                ]
+            }
+        }),
+        Order.countDocuments({ status: 'Canceled' }),
+        Order.countDocuments({ status: 'Returned' }),
 
-
-
-        const totalOrder = await Order.countDocuments();
-        const canceledOrdersCount = await Order.countDocuments({ status: 'Canceled' });
-        const returnedOrdersCount = await Order.countDocuments({ status: 'Returned' });
-
-        const topProducts = await Order.aggregate([
+        Order.aggregate([
             { $unwind: "$orderItems" },
             {
                 $match: {
                     $or: [
-                        { status: { $in: ['Paid', 'Pending', 'Processing'] } },
+                        { status: { $in: ['Paid', 'Delivered', 'Processing'] } },
                         { status: 'Delivered', paymentMethod: 'COD' }
                     ]
                 }
@@ -147,19 +164,14 @@ const dashboard = async (req, res) => {
                     totalQuantity: 1
                 }
             }
-        ]);
+        ]),
 
-
-        console.log("Top products:", topProducts);
-
-
-
-        const topCategories = await Order.aggregate([
+        Order.aggregate([
             { $unwind: "$orderItems" },
             {
                 $match: {
                     $or: [
-                        { status: { $in: ['Paid', 'Pending', 'Processing'] } },
+                        { status: { $in: ['Paid', 'Delivered', 'Processing'] } },
                         { status: 'Delivered', paymentMethod: 'COD' }
                     ]
                 }
@@ -235,16 +247,9 @@ const dashboard = async (req, res) => {
                     totalQuantity: 1
                 }
             }
-        ]);
+        ]),
 
-
-
-
-        console.log("Top Categories:", topCategories);
-
-
-
-        const totalSalesResult = await Order.aggregate([
+        Order.aggregate([
             {
                 $match: {
                     // createdOn: { $gte: startDate },
@@ -256,22 +261,10 @@ const dashboard = async (req, res) => {
                 }
             },
             { $group: { _id: null, total: { $sum: "$finalAmount" } } }
-        ]);
-        const totalSales = totalSalesResult[0]?.total || 0;
-
-        console.log(totalSales);
-
-        const visitors = await User.countDocuments({ isAdmin: false });
-
-
-        const currentPage = parseInt(req.query.page) || 1;
-        const itemsPerPage = 5;
-
-
-
-        const recentOrders = await Order.find({
-        })
-            .populate("user", "name email")
+        ]),
+        User.countDocuments({ isAdmin: false }),
+        Order.find({
+        }).populate("user", "name email")
             .populate({
                 path: "orderItems.product", 
                 select: "productName category", 
@@ -282,11 +275,12 @@ const dashboard = async (req, res) => {
             })
             .skip((currentPage - 1) * itemsPerPage)
             .limit(itemsPerPage)
-            .sort({ createdOn: -1 });
+            .sort({ createdOn: -1 }),
 
-        const totalItems = await Order.countDocuments();
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
+            Order.countDocuments()
 
+    ])
+        const totalSales = totalSalesResult[0]?.total || 0;
         const formattedRecentOrders = recentOrders.map(order => {
             const products = order.orderItems.map(item => ({
                 productName: item.product.productName,
@@ -300,8 +294,7 @@ const dashboard = async (req, res) => {
                 products
             };
         });
-
-        
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
         const dashboardData = {
             filter,
             salesData,
@@ -320,30 +313,14 @@ const dashboard = async (req, res) => {
 
 
         };
-
-        // Render the view
         res.render("admin-dashboard", dashboardData);
     } catch (error) {
         console.error("Error fetching dashboard data:", error);
         res.status(500).send("Server Error");
     }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
 module.exports = {
     dashboard,
-
 };
 
 

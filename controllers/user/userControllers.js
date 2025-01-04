@@ -1,12 +1,7 @@
 const User = require("../../models/userSchema");
-const Category = require("../../models/CategorySchema");
-const Product = require("../../models/productSchema");
-const Review = require("../../models/ReviewSchema");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
-const { getAllproducts } = require("../admin/productController");
 const env = require("dotenv").config();
-
 
 const pageNotFound = async (req, res) => {
     try {
@@ -15,7 +10,6 @@ const pageNotFound = async (req, res) => {
         res.redirect("/pageNotFound")
     }
 }
-
 
 const loadSignup = async (req, res) => {
 
@@ -35,9 +29,6 @@ const loadSignup = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
-
-
-
 
 async function sendVerificationEmail(email, otp) {
     try {
@@ -67,7 +58,7 @@ async function sendVerificationEmail(email, otp) {
     }
 }
 
- const signUp = async (req, res) => {
+const signUp = async (req, res) => {
     try {
         const { name, phone, email, password, confirm_password } = req.body;
 
@@ -124,9 +115,6 @@ async function sendVerificationEmail(email, otp) {
     }
 };
 
-
-
-
 const securePassword = async (password) => {
     try {
         const passwordHash = await bcrypt.hash(password, 10);
@@ -136,7 +124,6 @@ const securePassword = async (password) => {
 
     }
 }
-
 
 function generateOtp() {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -179,7 +166,6 @@ const verifyOtp = async (req, res) => {
     }
 };
 
-
 const resendOtp = async (req, res) => {
     try {
         const { email } = req.session.userData;
@@ -202,252 +188,6 @@ const resendOtp = async (req, res) => {
         res.status(500).json({ success: false, message: "Internal Server Error. Please try again" });
     }
 };
-
-
-
-
-
-
-const loadProductPage = async (req, res) => {
-    try {
-        const { id } = req.query; 
-        const userId = req.session.user;
-
-        // Fetch the product
-        const product = await Product.findOne({ 
-            _id: id,
-            isBlocked: false 
-        }).populate({
-            path: 'category',
-            match: { isListed: true } // Ensures the category is listed
-        });
-
-        if (!product || !product.category) {
-            return res.status(404).send("Product not found or category not listed.");
-        }
-
-        // Set availability and status based on quantity
-        product.isUnavailable = product.quantity <= 0;
-        product.status = product.quantity === 0 ? 'Out of Stock' : 'Available';
-
-        // Fetch related products from the same category
-        const relatedProducts = await Product.find({
-            category: product.category._id,
-            _id: { $ne: product._id },
-            isBlocked: false
-        }).limit(4);
-
-        // Fetch reviews
-        const reviews = await Review.find({ product: product._id })
-            .populate('user', 'name') 
-            .sort({ createdAt: -1 });
-
-        // Calculating average rating
-        const averageRating = reviews.length
-            ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length
-            : 0;
-
-        // Fetch categories (if needed)
-        const categories = await Category.find({ isListed: true });
-
-        const productDescription = product.description;
-        let user = null;
-
-        // Check if userId is available and fetch user
-        if (userId) {
-            user = await User.findById(userId);
-            if (!user) {
-                return res.redirect("/login");
-            }
-        }
-
-        res.render('productdetail', {
-            product,
-            productDescription,
-            averageRating,
-            reviews, 
-            relatedProducts,
-            user,
-            currentPage: 'shop',
-            cat: categories,
-            breadcrumbs: [
-                { label: 'Home', url: '/' },
-                { label: product.category.name, url: `/category/${product.category._id}` },
-                { label: product.name, url: `/product/${product._id}` }
-            ],
-        });
-
-    } catch (error) {
-        console.error("Error loading product page:", error);
-        res.status(500).send("An error occurred while loading the product page.");
-    }
-};
-
-
-
-
-
-
-const submitReview = async (req, res) => {
-    try {
-        const { rating, comment } = req.body;
-        const userId = req.session.user; 
-        const productId = req.params.id; 
-
-        if (!userId) {
-            return res.status(403).send("You must be logged in to submit a review.");
-        }
-
-        
-        const newReview = new Review({
-            product: productId,
-            user: userId,
-            rating: Number(rating),
-            comment,
-        });
-
-       
-        const savedReview = await newReview.save();
-
-        
-        const product = await Product.findById(productId);
-        if (!product) {
-            return res.status(404).send("Product not found.");
-        }
-
-                                                 
-        product.reviews.push(savedReview._id);// Push the new review's ID into the product's reviews array
-        await product.save();
-
-        res.redirect(`/productDetails?id=${productId}`);
-    } catch (error) {
-        console.error("Error submitting review:", error);
-        res.status(500).send("An error occurred while submitting the review.");
-    }
-};
-
-
-const deleteReview = async (req, res) => {
-    try {
-        const reviewId = req.params.reviewId;
-        const userId = req.session.user;
-
-        const review = await Review.findById(reviewId);
-
-        // Check if the user is the author of the review
-        if (review.user.toString() !== userId) {
-            return res.status(403).json({ error: "You are not authorized to delete this review." });
-        }
-
-        await Review.findByIdAndDelete(reviewId);
-
-        // Redirect to the product page
-        const productId = review.product; // Assuming the review schema includes a reference to the product
-        res.redirect(`/productDetails?id=${productId}`);
-    } catch (error) {
-        console.error("Error deleting review:", error);
-        res.status(500).json({ error: "An error occurred while deleting the review." });
-    }
-};
-
-
-
-const loadShopping = async (req, res) => {
-    try {
-        // Extract query parameters
-        const { sort, priceMin, priceMax, category, status, search } = req.query;
-
-        // Initialize the query object for filtering
-        let query = { isBlocked: false };
-
-        // Price range filter
-        if (priceMin && priceMax) {
-            query.salePrice = { $gte: parseFloat(priceMin), $lte: parseFloat(priceMax) };
-        }
-
-        // Category filter
-        if (category) {
-            query.category = category;
-        }
-
-        // Search filter
-        if (search) {
-            query.productName = { $regex: new RegExp(search, 'i') };
-        }
-
-        // Status filter (Available or Out of Stock)
-        if (status === 'Available') {
-            query.quantity = { $gt: 0 };
-        } else if (status === 'Out of Stock') {
-            query.quantity = 0;
-        }
-
-        // Sorting options
-        const sortOptions = {
-            aToZ: { productName: 1 },
-            zToA: { productName: -1 },
-            priceAsc: { salePrice: 1 },
-            priceDesc: { salePrice: -1 },
-            newArrivals: { createdAt: -1 }
-        };
-
-        // Determine sorting criteria
-        const sortQuery = sortOptions[sort] || sortOptions.newArrivals;
-
-        // Fetch filtered, sorted, and paginated products
-        const products = await Product.find(query)
-            .sort(sortQuery)
-            .collation({ locale: 'en', strength: 1 }) // Case-insensitive sorting
-            .populate({ path: 'category', match: { isListed: true } });
-
-        // Fetch all categories for filtering options
-        const categories = await Category.find({ isListed: true });
-
-        // Retrieve user information, if available
-        const userId = req.session.user;
-        const user = userId ? await User.findById(userId) : null;
-
-        let wishlistProductIds = [];
-        if (user) {
-            wishlistProductIds = user.wishlist;  // Assuming 'wishlist' is an array of product IDs in the user model
-        }
-
-        // Render the shop page with the required data
-        return res.render('shop', {
-            products,                      
-            user,                         
-            currentPage: 'shop',           
-            cat: categories,               
-            category: category || '',      
-            sort: sort || 'default',       
-            priceMin: priceMin || '',      
-            priceMax: priceMax || '',      
-            status: status || '',         
-            searchQuery: search || ''   ,   
-            wishlistProductIds
-        });
-
-    } catch (error) {
-        console.error('Error loading shopping page:', error);
-        res.status(500).send('Server Error');
-    }
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 const loadLogin = async (req, res) => {
     try {
@@ -499,53 +239,6 @@ const login = async (req, res) => {
     }
 };
 
-
-
-
-
-
-
-
-const loadHomepage = async (req, res) => {
-    try {
-        const userId = req.session.user;
-        const categories = await Category.find({ isListed: true });
-        
-        // Adjust the query to include products with zero quantity as well.
-        let productData = await Product.find({
-            isBlocked: false,
-            category: { $in: categories.map(category => category._id) },
-        });
-
-       
-        productData.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
-
-        
-        productData = productData.slice(0, 4);
-
-        let user = null;
-        if (userId) {
-            user = await User.findById(userId); 
-            if (!user) {
-                console.log("User not found in database for ID:", userId);
-                return res.redirect("/login"); 
-            }
-        }
-
-        let wishlistProductIds = [];
-        if (user) {
-            wishlistProductIds = user.wishlist;  
-        }
-
-        return res.render("home", { user: user, products: productData, currentPage: 'home',wishlistProductIds });
-
-    } catch (error) {
-        console.log('Home page not found', error);
-        res.status(500).send('Server error');
-    }
-}
-
-
 const logout = async (req, res) => {
     try {
         req.session.destroy((err) => {
@@ -561,23 +254,13 @@ const logout = async (req, res) => {
     }
 }
 
-
-
-
-module.exports = {
-    loadHomepage,
+module.exports = {   
     pageNotFound,
-    loadShopping,
     loadSignup,
     signUp,
     verifyOtp,
     resendOtp,
     loadLogin,
     login,
-    logout,
-    getAllproducts,
-    loadProductPage,
-    submitReview,
-    deleteReview,
-
+    logout,   
 }

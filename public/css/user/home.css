@@ -1,0 +1,266 @@
+.btn:hover {
+    background-color: #ff4c4c;
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+
+.product-img-action-wrap {
+    position: relative;
+}
+
+.wishlist-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    /* Ensure it stays above the image */
+}
+
+.wishlist-icon i {
+    font-size: 24px;
+    /* Adjust size if needed */
+    color: #fff;
+    /* White color for the heart */
+}
+
+.wishlist-icon .filled-heart {
+    color: #e74c3c;
+    /* Red color for filled heart */
+}
+
+.wishlist-icon .empty-heart {
+    color: #fff;
+    /* White color for empty heart */
+}
+
+/* Optional: Hover effect for the heart */
+.wishlist-icon:hover i {
+    transform: scale(1.1);
+    /* Slightly increase size on hover */
+    transition: transform 0.2s ease-in-out;
+}
+
+.wishlist-btn {
+    background-color: #3b5d50;
+    color: white;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: 10px;
+}
+
+.wishlist-btn:hover {
+    background-color: #ff4c4c;
+}
+
+.wishlist-btn:active {
+    transform: translateY(1px);
+}
+
+.product-img-action-wrap {
+    position: relative;
+}
+
+.product-img {
+    position: relative;
+    display: block;
+    overflow: hidden;
+}
+
+.product-cart-wrap {
+    border: 1px solid #eee;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.product-content-wrap h6 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.product-content-wrap h5 {
+    font-size: 16px;
+    color: #ff6b6b;
+    margin-bottom: 10px;
+}
+
+.product-content-wrap a {
+    display: inline-block;
+    padding: 8px 12px;
+    background-color: #ff6b6b;
+    color: white;
+    text-transform: uppercase;
+    font-size: 14px;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.product-content-wrap a:hover {
+    background-color: #ff4c4c;
+}
+
+.product-img img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-img:hover img {
+    transform: scale(1.1);
+}
+
+.product-cart-wrap {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 1px solid #e0e0e0;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.product-content-wrap {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.product-content-wrap h6,
+.product-content-wrap h5 {
+    margin: 0;
+}
+
+.product-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 400px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.product-image {
+    max-height: 200px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 15px;
+}
+
+h3 {
+    font-size: 18px;
+    margin: 10px 0;
+    color: #333;
+    text-align: center;
+}
+
+.product-size {
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+}
+
+.price-section {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.discounted-price {
+    font-size: 16px;
+    color: #d9534f;
+    font-weight: bold;
+    padding: 4px;
+}
+
+.original-price {
+    font-size: 14px;
+    color: #999;
+    text-decoration: line-through;
+    margin-left: 8px;
+    padding: 4px;
+}
+
+.discount-percentage {
+    font-weight: bold;
+    color: green;
+    margin-left: 10px;
+}
+
+.cart-btn {
+    margin-top: auto;
+    padding: 8px 20px;
+    font-size: 14px;
+    background-color: #0275d8;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.cart-btn:hover {
+    background-color: #025aa5;
+}
+
+.buttons-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+    .product-card {
+        max-width: 100%;
+    }
+
+    h3 {
+        font-size: 16px;
+    }
+
+    .price-section {
+        flex-direction: column;
+    }
+
+    .original-price,
+    .discount {
+        margin-left: 0;
+    }
+}
+.status-section {
+    margin: 10px 0;
+    text-align: center;
+}
+
+.status {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.status.available {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status.out-of-stock {
+    background-color: #f8d7da;
+    color: #721c24;
+}

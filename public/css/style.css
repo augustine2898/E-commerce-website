@@ -709,3 +709,19 @@ textarea {
     height: 50px;
     border-radius: 50%;
     background: rgba(59, 93, 80, 0.2); }
+
+    .bi-trash {
+      border: none;
+      background: none;
+      cursor: pointer;
+  }
+
+  .bi-trash:hover {
+      color: red;
+  }
+
+  .form-control {
+      height: 55px;
+      border-radius: 10px;
+      font-family: "Inter", sans-serif;
+  }

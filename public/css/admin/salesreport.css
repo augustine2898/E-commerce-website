@@ -1,0 +1,21 @@
+.d-flex {
+    display: flex;
+    align-items: center;
+  }
+
+  .mr-2 {
+    margin-right: 0.5rem;
+  }
+
+  .custom-date-range {
+    display: none;
+  }
+
+  .pagination-container {
+    margin-top: 20px;
+  }
+
+  .summary-section h4 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }

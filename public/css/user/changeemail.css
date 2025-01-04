@@ -1,0 +1,22 @@
+body {
+    height: 100vh;
+    margin: 0;
+    background-image: url("/images/pexels-fotoaibe-1743227.jpg");
+    background-size: cover;
+    background-position: center;
+    color: white;
+    overflow-y: hidden;
+}
+
+.card {
+    background-color: rgba(10, 10, 10, 0.5);
+    box-shadow: 0px 4px 15px rgb(0, 0, 0);
+    border-radius: 8px;
+    color: white;
+}
+
+.error-message {
+    color: red; /* Ensure error messages are in a visible color */
+    font-size: 0.9em;
+    margin-top: 5px;
+}

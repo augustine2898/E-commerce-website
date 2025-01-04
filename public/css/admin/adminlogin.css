@@ -1,0 +1,49 @@
+body,
+html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('/images/adminlogin.png');
+    background-size: cover;
+    background-position: center;
+    font-family: 'Nunito Sans', sans-serif;
+    color: white;
+}
+.login-container {
+    width: 100%;
+    max-width: 600px; /* Increased max-width for a larger form */
+    padding: 40px; /* Increased padding for larger form */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    background-color: rgba(30, 30, 30, 0.8);
+    border-radius: 12px;
+    min-height: 400px; /* Ensures the container has a minimum height */
+}
+.error-message {
+    color: red;
+    font-size: 0.875rem;
+}
+.text-center {
+    color: white;
+    margin-bottom: 20px;
+}
+.form-group {
+    margin-bottom: 20px; /* Added margin-bottom for space between fields */
+}
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+@media (max-width: 480px) {
+    .login-container {
+        padding: 30px; /* Adjust padding for smaller screens */
+    }
+    .login-container h2 {
+        font-size: 1.5rem;
+    }
+}

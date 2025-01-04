@@ -1,12 +1,9 @@
 const Product = require("../../models/productSchema");
 const Category = require("../../models/CategorySchema");
 const User = require("../../models/userSchema");
-
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
-
-
 
 const getProductAddPage = async (req, res) => {
     try {
@@ -88,8 +85,6 @@ const addProducts = async (req, res) => {
     }
 };
 
-
-
 const getAllproducts = async (req, res) => {
     try {
         const search = req.query.search || "";
@@ -103,8 +98,6 @@ const getAllproducts = async (req, res) => {
         const query = {
             $or: [
                 { productName: searchRegex },
-                // Add other fields to search if needed
-                // { brand: searchRegex }
             ],
         };
 
@@ -145,22 +138,15 @@ const getAllproducts = async (req, res) => {
 const addProductOffer = async (req, res) => {
     try {
         const { id, percentage } = req.body;
-        console.log(req.body)
-        const findProduct = await Product.findOne( {_id: id} );
-        console.log(findProduct)
+        const findProduct = await Product.findOne( {_id: id} ); 
         const findCategory = await Category.findOne({ _id: findProduct.category });
-        console.log(findCategory)
-
         if (findCategory.categoryOffer > percentage) {
             return res.json({ status: false, message: "This product category alreday has a category Offer" })
         }
-
         if (!findProduct.originalSalePrice) {
             findProduct.originalSalePrice = findProduct.salePrice;
             console.log(findProduct.originalSalePrice);
         }
-
-        
         findProduct.salePrice = findProduct.salePrice - Math.floor(findProduct.regularPrice * (percentage / 100));
         findProduct.productOffer = parseInt(percentage);
         await findProduct.save();
@@ -205,8 +191,6 @@ const removeProductOffer = async (req, res) => {
         res.json({ status: false, message: 'Error removing offer.' });
     }
 };
-
-
 
 const blockProduct = async (req, res) => {
     try {
@@ -301,10 +285,6 @@ const editProduct = async (req, res) => {
         res.status(500).json({ error: "An error occurred while updating the product." });
     }
 };
-
-
-
-
 
 const deleteSingleImage = async (req, res) => {
     try {

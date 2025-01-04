@@ -1,5 +1,6 @@
 <%- include("../../views/partials/user/header") %>
 
+<link rel="stylesheet" href="/css/user/shop.css">
     <!-- Start Hero Section -->
     <div class="hero">
         <div class="container">
@@ -32,24 +33,27 @@
             </div>
 
             <!-- Sort Dropdown (Right Side) -->
-            <div class="col-md-3 col-6">
-                <label for="sort" class="form-label"></label>
-                <select id="sort" class="form-select" name="sort">
-                    <option value="">Default</option>
-                    <option value="priceAsc" <%=sort==='priceAsc' ? 'selected' : '' %>>Price: Low to High</option>
-                    <option value="priceDesc" <%=sort==='priceDesc' ? 'selected' : '' %>>Price: High to Low</option>
-                    <option value="newArrivals" <%=sort==='newArrivals' ? 'selected' : '' %>>New Arrivals</option>
-                    <option value="aToZ" <%=sort==='aToZ' ? 'selected' : '' %>>A to Z</option>
-                    <option value="zToA" <%=sort==='zToA' ? 'selected' : '' %>>Z to A</option>
-                </select>
+            <div class="row">
+                <!-- Sort Dropdown (Left Side) -->
+                <div class="col-md-6 col-12 mb-3 mb-md-0">
+                    <label for="sort" class="form-label">Sort by</label>
+                    <select id="sort" class="form-select" name="sort">
+                        <option value="">Default</option>
+                        <option value="priceAsc" <%=sort==='priceAsc' ? 'selected' : '' %>>Price: Low to High</option>
+                        <option value="priceDesc" <%=sort==='priceDesc' ? 'selected' : '' %>>Price: High to Low</option>
+                        <option value="newArrivals" <%=sort==='newArrivals' ? 'selected' : '' %>>New Arrivals</option>
+                        <option value="aToZ" <%=sort==='aToZ' ? 'selected' : '' %>>A to Z</option>
+                        <option value="zToA" <%=sort==='zToA' ? 'selected' : '' %>>Z to A</option>
+                    </select>
+                </div>
+            
+                <!-- Filter Button (Right Side) -->
+                <div class="col-md-6 col-12 text-md-end ms-md-auto">
+                    <button class="btn btn-primary w-100 w-md-auto mt-4" data-bs-toggle="modal"
+                        data-bs-target="#filterModal">Filter</button>
+                </div>
             </div>
-
-            <!-- Filter Button (Right Side) -->
-            <div class="col-md-3 col-6 text-md-end ms-md-auto">
-                <button class="btn btn-primary w-100 w-md-auto mt-4" data-bs-toggle="modal"
-                    data-bs-target="#filterModal">Filter</button>
-            </div>
-        </div>
+            
 
         <!-- Filter Modal -->
         <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
@@ -176,7 +180,19 @@
 
         </div>
     </div>
-
+    <div class="pagination-container">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mb-20">
+                <% for (let i=1; i <=totalPages; i++) { %>
+                    <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                        <a class="page-link" href="?page=<%= i %>">
+                            <%= i %>
+                        </a>
+                    </li>
+                    <% } %>
+            </ul>
+        </nav>
+    </div>
     </div>
     </div>
     </div>
@@ -185,263 +201,5 @@
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
-            document.querySelector('#sort').addEventListener('change', (e) => {
-                let url = '/shop?sort=' + e.target.value;
-                ['priceMin', 'priceMax', 'category', 'status'].forEach(param => {
-                    const value = document.querySelector(`[name="${param}"]`)?.value;
-                    if (value) url += `&${param}=${value}`;
-                });
-                window.location.href = url;
-            });
-
-
-
-
-
-            document.querySelectorAll('.cart-btn').forEach(button => {
-                button.addEventListener('click', async (event) => {
-                    const productId = event.target.getAttribute('data-product-id');
-                    const userIsLoggedIn = Boolean(<%= user ? 'true' : 'false' %>); 
-
-                    if (!userIsLoggedIn) {
-                        
-                        Swal.fire({
-                            title: 'Please Log In',
-                            text: 'You must be logged in to add items to your cart.',
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonText: 'Log In',
-                            cancelButtonText: 'Cancel',
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = '/login'; 
-                            }
-                        });
-                        return; 
-                    }
-
-                   
-                    try {
-                        const response = await fetch('/cart/add', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ productId, quantity: 1 }), // Default quantity is 1
-                        });
-
-                        // Handle response
-                        if (response.ok) {
-                            const data = await response.json();
-                            if (data.message === 'Product added to cart') {
-                                Swal.fire('Success', data.message, 'success');
-                            } else {
-                                Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
-                            }
-                        } else {
-                            const data = await response.json();
-                            Swal.fire('Error', data.message || 'Failed to add product to cart. Please try again.', 'error');
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        Swal.fire('Error', 'Failed to add product to cart. Please try again.', 'error');
-                    }
-                });
-            });
-
-
-
-            async function addToWishlist(productId) {
-                console.log("Attempting to add to wishlist:", productId)
-                $.ajax({
-
-                    url: '/addToWishlist',
-                    method: 'POST',
-                    data: { productId: productId },
-                    success: (response) => {
-                        if (response.status) {
-
-                            Swal.fire({
-                                title: 'Added to wishlist',
-                                text: 'The product has been added to your wishlist',
-                                icon: 'success',
-                                timer: 2000
-                            }).then(() => {
-                                window.location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: "Already in Wishlist",
-                                text: response.message,
-                                icon: 'info',
-                                timer: 2000,
-                            })
-                        }
-                    },
-                    error: (error) => {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'There was an error adding the product to your Wishlist',
-                            timer: 2000
-                        })
-                    }
-
-                })
-            }
-        </script>
-
-        <style>
-            .status-section {
-                margin: 10px 0;
-                text-align: center;
-            }
-
-            .status {
-                font-size: 14px;
-                font-weight: bold;
-                padding: 5px 10px;
-                border-radius: 5px;
-                display: inline-block;
-            }
-
-            .status.available {
-                background-color: #d4edda;
-                color: #155724;
-            }
-
-            .status.out-of-stock {
-                background-color: #f8d7da;
-                color: #721c24;
-            }
-
-
-            .product-img-action-wrap {
-                position: relative;
-            }
-
-            .wishlist-icon {
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                z-index: 10;
-                /* Ensure it stays above the image */
-            }
-
-            .wishlist-icon i {
-                font-size: 24px;
-                /* Adjust size if needed */
-                color: #fff;
-                /* White color for the heart */
-            }
-
-            .wishlist-icon .filled-heart {
-                color: #e74c3c;
-                /* Red color for filled heart */
-            }
-
-            .wishlist-icon .empty-heart {
-                color: #fff;
-                /* White color for empty heart */
-            }
-
-            /* Optional: Hover effect for the heart */
-            .wishlist-icon:hover i {
-                transform: scale(1.1);
-                /* Slightly increase size on hover */
-                transition: transform 0.2s ease-in-out;
-            }
-
-            .product-card {
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                background-color: #fff;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-            }
-
-            .product-image {
-                height: 190px;
-                width: 100%;
-                object-fit: cover;
-            }
-
-            .product-info {
-                padding: 15px;
-            }
-
-            h3 {
-                font-size: 18px;
-                color: #333;
-                text-align: center;
-            }
-
-            .price-section {
-                margin-top: 10px;
-                display: flex;
-                justify-content: center;
-            }
-
-            .discounted-price {
-                font-size: 16px;
-                color: #d9534f;
-                font-weight: bold;
-            }
-
-            .discount-percentage {
-                font-weight: bold;
-                color: green;
-                margin-left: 10px;
-            }
-
-            .original-price {
-                text-decoration: line-through;
-                margin-left: 10px;
-                color: #888;
-            }
-
-            .button-group {
-                display: flex;
-                gap: 10px;
-                justify-content: space-around;
-                margin-top: 15px;
-            }
-
-            .cart-btn {
-                background-color: #007bff;
-                color: #fff;
-                padding: 8px 16px;
-                font-size: 14px;
-                border-radius: 5px;
-                transition: background-color 0.3s;
-            }
-
-            .wishlist-btn {
-                background-color: #3b5d50;
-                color: #fff;
-                padding: 8px 16px;
-                font-size: 14px;
-                border-radius: 5px;
-                transition: background-color 0.3s;
-            }
-
-            .cart-btn:hover,
-            .wishlist-btn:hover {
-                background-color: #0056b3;
-            }
-
-            @media (max-width: 576px) {
-                h3 {
-                    font-size: 16px;
-                }
-
-                .price-section {
-                    flex-direction: column;
-                    align-items: center;
-                }
-            }
-
-            .container .row {
-                margin-right: 0;
-            }
-        </style>
+        <script>const userIsLoggedIn = Boolean(<%= user ? 'true' : 'false' %>);</script>
+        <script src="/js/user/shop.js"></script>

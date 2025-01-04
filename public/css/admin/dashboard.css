@@ -1,0 +1,197 @@
+* {
+    box-sizing: border-box; /* Ensures padding and border don't affect element's width/height */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.filter-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.filter-container select {
+    padding: 5px;
+    font-size: 16px;
+}
+
+.dashboard-stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.chart-container {
+    flex: 1; /* Ensures the chart container takes up remaining space */
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.box-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    padding: 0;
+    width: 100%;
+    gap: 20px; /* Add space between the list items */
+}
+
+.box-info li {
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    width: 30%;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds subtle shadow for better separation */
+}
+
+.box-info li i {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+.box-info li .text h3 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.box-info li .text p {
+    font-size: 16px;
+    margin: 0;
+}
+
+
+.top-products, .top-categories {
+    width: 48%;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h3 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+table th, table td {
+    padding: 12px;
+    text-align: left;
+}
+
+table th {
+    background-color: #f7f7f7;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.order img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.status.completed {
+    color: green;
+}
+
+.status.pending {
+    color: orange;
+}
+
+.status.canceled {
+    color: red;
+}
+
+.ledger-book {
+    width: 100%;
+    margin-top: 20px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ledger-book h3 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.ledger-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ledger-table th, .ledger-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.ledger-table th {
+    background-color: #f7f7f7;
+}
+
+.ledger-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.ledger-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+/* Ensure responsiveness */
+@media (max-width: 768px) {
+    .dashboard-stats {
+        flex-direction: column;
+    }
+
+    .box-info li {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .top-products, .top-categories {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .filter-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-container select {
+        margin-top: 10px;
+    }
+}

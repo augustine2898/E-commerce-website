@@ -10,57 +10,7 @@
     />
     <link rel="stylesheet" href="/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/css/style.css" />
-    <style>
-        body,
-        html {
-            height: 100%;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-image: url('/images/adminlogin.png');
-            background-size: cover;
-            background-position: center;
-            font-family: 'Nunito Sans', sans-serif;
-            color: white;
-        }
-        .login-container {
-            width: 100%;
-            max-width: 600px; /* Increased max-width for a larger form */
-            padding: 40px; /* Increased padding for larger form */
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            background-color: rgba(30, 30, 30, 0.8);
-            border-radius: 12px;
-            min-height: 400px; /* Ensures the container has a minimum height */
-        }
-        .error-message {
-            color: red;
-            font-size: 0.875rem;
-        }
-        .text-center {
-            color: white;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 20px; /* Added margin-bottom for space between fields */
-        }
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-            transition: background-color 0.3s ease;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        @media (max-width: 480px) {
-            .login-container {
-                padding: 30px; /* Adjust padding for smaller screens */
-            }
-            .login-container h2 {
-                font-size: 1.5rem;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="/css/admin/adminlogin.css" />
 </head>
 <body>
     <div class="login-container">
@@ -96,35 +46,6 @@
     </div>
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const adminLoginForm = document.getElementById("adminLoginForm");
-            const emailField = document.getElementById("adminEmail");
-            const passwordField = document.getElementById("adminPassword");
-            const emailError = document.getElementById("emailError");
-            const passwordError = document.getElementById("passwordError");
-
-            adminLoginForm.addEventListener("submit", function (event) {
-                let isValid = true;
-                const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-                if (!emailPattern.test(emailField.value)) {
-                    emailError.textContent = "Invalid email format";
-                    isValid = false;
-                } else {
-                    emailError.textContent = "";
-                }
-                if (passwordField.value.length < 8) {
-                    passwordError.textContent = "Password should contain at least 8 characters";
-                    isValid = false;
-                } else {
-                    passwordError.textContent = "";
-                }
-
-                if (!isValid) {
-                    event.preventDefault();
-                }
-            });
-        });
-    </script>
+    <script src="/js/admin/adminlogin.js"></script>
 </body>
 </html>
