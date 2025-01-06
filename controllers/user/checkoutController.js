@@ -228,7 +228,7 @@ const placeOrder = async (req, res) => {
                     totalAmount: finalAmountWithDelivery,
                 });
             } catch (error) {
-                // If Razorpay payment fails
+               
                 order.status = 'Payment Pending';
                 await order.save();
                 cart.items.forEach(async (item) => {
@@ -252,48 +252,20 @@ const placeOrder = async (req, res) => {
             if (!wallet) {
                 return res.status(400).json({ message: 'Wallet not found.' });
             }
-
+        
             if (wallet.balance < finalAmountWithDelivery) {
-                order = new Order({
-                    user: user,
-                    orderItems,
-                    totalPrice: subtotal,
-                    offerDiscount,
-                    couponDiscount,
-                    discount: totalDiscount,
-                    finalAmount: finalAmountWithDelivery,
-                    couponCode: cart.couponCode || null,
-                    address: address._id,
-                    invoiceDate: new Date(),
-                    status: 'Payment Pending',
-                    paymentMethod: 'Wallet',
-                });
-                await order.save();
-
-                cart.items.forEach(async (item) => {
-                    const product = await Product.findById(item.productId);
-                    if (product) {
-                        product.quantity -= item.quantity; 
-                        await product.save();
-                    }
-                });
-
-                cart.items = [];
-                cart.couponCode = null;
-                cart.couponDiscount = 0;
-                await cart.save();
-
                 return res.status(400).json({
                     success: false,
-                    message: 'Insufficient wallet balance. Payment pending.',
-                    orderId: order._id,
+                    message: 'Insufficient wallet balance. Payment cannot be processed.',
                 });
             }
-
+        
+            // Deduct wallet balance
             wallet.balance -= finalAmountWithDelivery;
             await wallet.save();
-
-            order = new Order({
+        
+            // Create order since balance is sufficient
+            const order = new Order({
                 user: user,
                 orderItems,
                 totalPrice: subtotal,
@@ -307,21 +279,23 @@ const placeOrder = async (req, res) => {
                 status: 'Paid',
                 paymentMethod: 'Wallet',
             });
-
+        
             await order.save();
-
+        
+            // Clear cart
             cart.items = [];
             cart.couponCode = null;
             cart.couponDiscount = 0;
             await cart.save();
-
+        
             return res.status(200).json({
                 success: true,
                 message: 'Order placed successfully!',
                 orderId: order._id,
-                totalAmount: finalAmount,
+                totalAmount: finalAmountWithDelivery,
             });
         }
+        
 
 
         else if (payment_method === 'cash_on_delivery') {
@@ -677,15 +651,9 @@ const retryPayment = async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
 const getEditAddress = async (req, res) => {
+    console.log("Address ID:", req.params.id);
+
     const addressId = req.params.id;
 
     try {
@@ -714,7 +682,10 @@ const getEditAddress = async (req, res) => {
 };
 
 const postEditAddress = async (req, res) => {
+    //console.log("Address ID:", req.params.id);
+
     const addressId = req.params.id;
+    console.log(addressId)
     const {
         firstName,
         lastName,

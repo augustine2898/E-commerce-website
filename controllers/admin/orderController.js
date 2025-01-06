@@ -3,7 +3,7 @@ const Category = require("../../models/CategorySchema");
 const User = require("../../models/userSchema");
 const Order =require("../../models/orderSchema")
 
-
+//controller to get the list of orders
 const getAllOrders = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; 
@@ -32,8 +32,8 @@ const getAllOrders = async (req, res) => {
       res.status(500).json({ message: "Failed to fetch orders" });
   }
 };
-
-  const updateOrderStatus = async (req, res) => {
+// Controller to Update status of orders
+const updateOrderStatus = async (req, res) => {
     try {
         const orderId = req.params.id;
         const { status } = req.body;
@@ -123,7 +123,7 @@ const getAllOrders = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Failed to update order status' });
     }
 };
-
+// Export the functions to be used in other parts of the application
 module.exports = {
     getAllOrders,
     updateOrderStatus,

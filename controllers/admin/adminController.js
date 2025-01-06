@@ -1,14 +1,17 @@
-const User =require("../../models/userSchema");
-const mongoose =require("mongoose");
-const bcrypt =require("bcrypt");
+const User =require("../../models/userSchema");//Import user schema 
+const mongoose =require("mongoose");//Improting Mongoose for MongoDB
+const bcrypt =require("bcrypt"); //Improting bcrypt for hashing 
 
+// Controller to handle rendering of the admin error page
 const pageerror =async(req,res)=>{
     
     res.render("admin-error")
 }
+// Controller to handle rendering of the 404 page
 const page404 =async(req,res)=>{
     res.render("pagenotfound");
 }
+// Function to load the admin login page
 const loadLogin =(req,res)=>{
     
     if(req.session.admin){
@@ -17,6 +20,7 @@ const loadLogin =(req,res)=>{
     }
     res.render("admin-login",{message:null})
 }
+// Function to handle admin login
 const login= async(req,res)=>{
     try {
         const {email,password} =req.body;
@@ -37,6 +41,7 @@ const login= async(req,res)=>{
         return res.redirect("/pageerror");
     }
 }
+// Function to handle admin logout
 const logout =async (req,res)=>{
     try {
         req.session.destroy(err=>{
@@ -52,6 +57,7 @@ const logout =async (req,res)=>{
         
     }
 }
+// Export the functions to be used in other parts of the application
 module.exports ={
     loadLogin,
     login,

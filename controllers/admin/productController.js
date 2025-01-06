@@ -1,10 +1,12 @@
-const Product = require("../../models/productSchema");
-const Category = require("../../models/CategorySchema");
-const User = require("../../models/userSchema");
-const fs = require("fs");
-const path = require("path");
-const sharp = require("sharp");
+const Product = require("../../models/productSchema"); // Importing the Product schema for database operations related to products
+const Category = require("../../models/CategorySchema"); // Importing the Category schema for handling product categories
+const User = require("../../models/userSchema"); // Importing the User schema for user-related operations
+const fs = require("fs"); // File System module for file operations like reading, writing, and deleting files
+const path = require("path"); // Path module for handling and transforming file paths
+const sharp = require("sharp"); // Sharp module for image processing, including resizing, cropping, and format conversion
 
+
+//controller for getting new products page 
 const getProductAddPage = async (req, res) => {
     try {
         const category = await Category.find({ isListed: true });
@@ -16,7 +18,7 @@ const getProductAddPage = async (req, res) => {
         res.redirect("/pageerror");
     }
 }
-
+//controller for adding new products
 const addProducts = async (req, res) => {
     try {
         const products = req.body;
@@ -84,7 +86,7 @@ const addProducts = async (req, res) => {
         return res.redirect("/admin/pageerror");
     }
 };
-
+//controller for getting list of products
 const getAllproducts = async (req, res) => {
     try {
         const search = req.query.search || "";
@@ -134,7 +136,7 @@ const getAllproducts = async (req, res) => {
     }
 };
 
-
+//Controller for adding offers
 const addProductOffer = async (req, res) => {
     try {
         const { id, percentage } = req.body;
@@ -161,7 +163,7 @@ const addProductOffer = async (req, res) => {
 
     }
 };
-
+//controller for removing offer 
 const removeProductOffer = async (req, res) => {
     try {
         const { productId } = req.body;
@@ -191,7 +193,7 @@ const removeProductOffer = async (req, res) => {
         res.json({ status: false, message: 'Error removing offer.' });
     }
 };
-
+//controller for blocking products
 const blockProduct = async (req, res) => {
     try {
         let id = req.query.id;
@@ -204,7 +206,7 @@ const blockProduct = async (req, res) => {
         res.redirect("/pageerror")
     }
 }
-
+//Controller for unblocking  product
 const unblockProduct = async (req, res) => {
     try {
         let id = req.query.id;
@@ -216,7 +218,7 @@ const unblockProduct = async (req, res) => {
         res.redirect("/pageerror")
     }
 }
-
+//Controller for getting product edit page
 const getEditproduct = async (req, res) => {
     try {
         const id = req.query.id;
@@ -231,7 +233,7 @@ const getEditproduct = async (req, res) => {
 
     }
 }
-
+//Contoller for editing product details
 const editProduct = async (req, res) => {
     try {
         const id = req.params.id;
@@ -285,7 +287,7 @@ const editProduct = async (req, res) => {
         res.status(500).json({ error: "An error occurred while updating the product." });
     }
 };
-
+//controller to remove image of product
 const deleteSingleImage = async (req, res) => {
     try {
         const { imageNameToServer, productIdToServer } = req.body;
@@ -318,8 +320,9 @@ const deleteSingleImage = async (req, res) => {
     }
 }
 
+//Cotroller to remove products 
 const removeProduct = async (req, res) => {
-    const { id } = req.params; // Assuming you're using a route parameter for the category ID
+    const { id } = req.params; 
 
     try {
         // Find the category by ID and remove it
@@ -334,7 +337,7 @@ const removeProduct = async (req, res) => {
         return res.status(500).json({ error: "Internal server error" });
     }
 };
-
+// Export the functions to be used in other parts of the application
 module.exports = {
     getProductAddPage,
     addProducts,

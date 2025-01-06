@@ -1,5 +1,6 @@
-const Category = require("../../models/CategorySchema");
-const Product = require("../../models/productSchema");
+const Category = require("../../models/CategorySchema");//Import category model
+const Product = require("../../models/productSchema");//Import product Schema 
+// Function to handle getting the list of all  category
 const categoryInfo = async (req, res) => {
     try {
         const search = req.query.search || ""; 
@@ -39,7 +40,7 @@ const categoryInfo = async (req, res) => {
         res.redirect("/pageerror");
     }
 };
-
+// Function to handle removing  category
 const removeCategory = async (req, res) => {
     const { id } = req.params; // Assuming you're using a route parameter for the category ID
 
@@ -56,6 +57,7 @@ const removeCategory = async (req, res) => {
         return res.status(500).json({ error: "Internal server error" });
     }
 };
+// Function to handle adding offers for category
 const addCategoryOffer = async (req, res) => {
     try {
         const percentage = parseInt(req.body.percentage);
@@ -89,7 +91,7 @@ const addCategoryOffer = async (req, res) => {
         res.status(500).json({ status: false, message: "Internal Server Error" });
     }
 }
-
+// Function to handle removing offers for category 
 const removeCategoryOffer = async (req, res) => {
     try {
         const categoryId = req.body.categoryId;
@@ -115,7 +117,7 @@ const removeCategoryOffer = async (req, res) => {
         res.status(500).json({ status: false, message: "Internal Server Error" })
     }
 }
-
+// Function to handle listing category
 const getListCategory = async (req, res) => {
     try {
         let id = req.query.id;
@@ -126,7 +128,7 @@ const getListCategory = async (req, res) => {
         res.status(500).json({ success: false, message: "Error listing category" });
     }
 };
-
+// Function to handle unlisting category
 const getUnlistCategory = async (req, res) => {
     try {
         let id = req.query.id;
@@ -137,7 +139,7 @@ const getUnlistCategory = async (req, res) => {
         res.status(500).json({ success: false, message: "Error unlisting category" });
     }
 };
-
+// Function for getting editcategory page 
 const getEditCategory =async(req,res)=>{
     try {
         const id =req.query.id;
@@ -148,7 +150,7 @@ const getEditCategory =async(req,res)=>{
     }
    
 }
-
+// Function to handle adding of new category
 const addCategory = async (req, res) => {
     const { name, description } = req.body;
     try {
@@ -167,7 +169,7 @@ const addCategory = async (req, res) => {
         return res.status(500).json({ error: "Internet server error" })
     }
 }
-
+// Function to handle category details editing
 const editCategory = async (req, res) => {
     try {
         const id = req.params.id;
@@ -204,7 +206,7 @@ const editCategory = async (req, res) => {
         return res.status(500).json({ success: false, error: "Internal server error." });
     }
 };
-
+// Export the functions to be used in other parts of the application
 module.exports = {
     categoryInfo,
     addCategory,

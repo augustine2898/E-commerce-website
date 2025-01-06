@@ -3,7 +3,7 @@ const Category = require("../../models/CategorySchema");
 const Product = require("../../models/productSchema");
 const Order = require("../../models/orderSchema")
 
-
+//Controller for getting data in the dashboard for admin 
 const dashboard = async (req, res) => {
     try {
         const filter = req.query.filter || 'yearly';
@@ -319,6 +319,7 @@ const dashboard = async (req, res) => {
         res.status(500).send("Server Error");
     }
 };
+// Export the functions to be used in other parts of the application
 module.exports = {
     dashboard,
 };

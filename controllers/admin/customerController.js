@@ -1,4 +1,4 @@
-const User = require("../../models/userSchema");
+const User = require("../../models/userSchema");///Import user model
 //Load Customer Page
 const customerinfo = async (req, res) => {
     try {
@@ -90,7 +90,7 @@ const customerBlocked = async (req, res) => {
         res.redirect("/pageerror");
     }
 };
-
+//Controller for Unblocking customers
 const customerUnblocked = async (req, res) => {
     try {
         let id = req.query.id;
@@ -108,7 +108,7 @@ const customerUnblocked = async (req, res) => {
         res.redirect("/pageerror");
     }
 };
-
+// Export the functions to be used in other parts of the application
 module.exports = {
     customerinfo,
     customerBlocked,

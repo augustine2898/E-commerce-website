@@ -1,6 +1,6 @@
-const Coupon = require("../../models/couponSchema");
-const pageerror = require("../../controllers/admin/adminController")
-const mongoose = require("mongoose");
+const Coupon = require("../../models/couponSchema");//Import Coupon Model
+const pageerror = require("../../controllers/admin/adminController")// Import pageerror form admincontroller
+const mongoose = require("mongoose");//Improting Mongoose for MongoDB
 
 //Load Coupon Page
 const loadCoupon = async (req, res) => {
@@ -131,7 +131,7 @@ const deleteCoupon= async(req,res)=>{
         res.status(500).send({success:true,message:"Failed to delete coupon"})
     }
 }
-
+// Export the functions to be used in other parts of the application
 module.exports = {
     loadCoupon,
     createCoupon,
