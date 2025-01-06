@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function prevImage() {
     currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
-    changeImage(currentImageIndex); // Call changeImage to update image
+    changeImage(currentImageIndex); 
   }
 
 

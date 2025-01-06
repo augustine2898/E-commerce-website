@@ -226,11 +226,11 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="/js/user/usersideimagezoom.js"></script>
+    <script src="/js/user/usersideimagezoom.js" async></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       const userIsLoggedIn = Boolean(<%= user ? 'true' : 'false' %>);
       
       const images = <%- JSON.stringify(product.productImage) %>
     </script>
-    <script src="/js/user/productdetail.js"></script>
+    <script src="/js/user/productdetail.js" async></script>

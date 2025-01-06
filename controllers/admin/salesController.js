@@ -61,7 +61,7 @@ const getSalesReport = async (req, res) => {
                 $group: {
                     _id: null,
                     overallSalesCount: { $sum: 1 },
-                    totalRevenue: { $sum: '$totalPrice' },
+                    totalRevenue: { $sum: '$finalAmount' },
                     totalFinalAmount: { $sum: '$finalAmount' },
                     totalDiscount: { $sum: '$discount' },
                     couponDeductions: { $sum: '$couponDiscount' },
@@ -202,7 +202,7 @@ const downloadSalesReport = async (req, res) => {
                         orderId: order._id,
                         product: item.product ? item.product.productName : 'Unknown',
                         quantity: item.quantity,
-                        totalAmount: order.totalPrice.toFixed(2),
+                        totalAmount: order.finalAmount.toFixed(2),
                         discount: order.discount.toFixed(2),
                         couponDeduction: order.couponDiscount.toFixed(2),
                     });
