@@ -1,6 +1,6 @@
 document.getElementById('editAddressForm').addEventListener('submit', async function (e) {
     e.preventDefault();
-
+    const addressId = this.dataset.addressId;
     // Validate form and collect data as before
     const isValid = validateForm();
 
@@ -9,7 +9,7 @@ document.getElementById('editAddressForm').addEventListener('submit', async func
       const data = Object.fromEntries(formData.entries());
 
       try {
-        const response = await fetch('/editAddress/<%= address.id %>', {
+        const response = await fetch(`/editAddress/${addressId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

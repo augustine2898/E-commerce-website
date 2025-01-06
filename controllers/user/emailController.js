@@ -2,6 +2,11 @@ const User = require("../../models/userSchema");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 
+
+function generateOtp() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+const OTP_EXPIRATION_TIME = 1 * 60 * 1000;
 const changeEmail = async (req, res) => {
     try {
         const message = req.session.message || null;
@@ -30,7 +35,7 @@ const changeEmail = async (req, res) => {
 const changeEmailValid = async (req, res) => {
     try {
         const { email } = req.body;
-
+        console.log("email:",{ email })
         const userExists = await User.findOne({ email });
         if (userExists) {
             const otp = generateOtp();
@@ -67,6 +72,7 @@ const changeEmailValid = async (req, res) => {
             res.redirect('/change-email'); // Redirect to change-email route
         }
     } catch (error) {
+        console.log(error)
         req.session.message = "An error occurred."; // Handle unexpected error
         res.redirect('/change-email'); // Redirect to change-email route
     }
@@ -140,11 +146,65 @@ const updateEmailPage = (req, res) => {
     }
 };
 
+const sendVerificationEmail = async (email, otp) => {
+    try {
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            port: 587,
+            secure: false,
+            requireTLS: true,
+            auth: {
+                user: process.env.NODEMAILER_EMAIL,
+                pass: process.env.NODEMAILER_PASSWORD
+            }
+        })
+
+        const mailOptions = {
+            from: process.env.NODEMAILER_EMAIL,
+            to: email,
+            subject: "Your OTp for password rest",
+            text: `Your OTP is ${otp}`,
+            html: `<b><h4>Your OTP: ${otp}</h4></b>`
+        }
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log("email sent :", info.response);
+        return true;
+
+    } catch (error) {
+
+        console.error("Error sending email", error);
+        return false;
+
+    }
+}
+
+const resendOtp = async (req, res) => {
+    try {
+        const email = req.session.email;
+        const otp = generateOtp();
+        req.session.userOtp = otp;
+        req.session.otpTimestamp = Date.now()
+        console.log("resending otp to email:", email);
+        const emailSent = await sendVerificationEmail(email, otp);
+        if (emailSent) {
+            console.log("Resend OTP:", otp);
+            res.status(200).json({ success: true, message: "Resend OTP Successful" });
+        }
+    } catch (error) {
+        console.log("Error in resinding otp", error)
+        res.status(500).json({ success: false, message: 'internet server  error' })
+
+    }
+}
+
 module.exports={
     changeEmail,
     changeEmailValid,
     verifyEmailOtp,
     updateEmail,
     updateEmailPage,
+    resendOtp,
+    sendVerificationEmail,
 
 }
