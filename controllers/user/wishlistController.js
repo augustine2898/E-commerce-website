@@ -6,14 +6,20 @@ const getWishlist = async (req, res) => {
     try {
         const userId = req.session.user;
         const user = await User.findById(userId);
-        
+        const totalProducts = await Product.countDocuments()
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+        const skip = (page - 1) * limit;
+        const totalPages = Math.ceil(totalProducts / limit);
 
         const products = await Product.find({ _id: { $in: user.wishlist } });
 
         res.render("wishlist", {
             user,
             currentPage: 'wishlist',
-            wishlist: products,  
+            wishlist: products,
+            currentPage: page,
+            totalPages: totalPages,  
         });
     } catch (error) {
         console.log(error);
@@ -46,21 +52,17 @@ const addToWishlist =async(req,res)=>{
 const removeProduct =async(req,res)=>{
     try{
         const userId =req.session.user
-        console.log('User ID:', userId);
        
         if (!userId) {
             return res.redirect('/login'); 
         }
         const productId =req.query.productId;
-        console.log('Product ID:', productId)
         const user =await User.findById(userId);
-        console.log(user)
+        
 
         const index = user.wishlist.indexOf(productId);
-        console.log('index',index)
         user.wishlist.splice(index,1);
         await user.save();
-        console.log('Updated Wishlist:', user.wishlist)
         return res.redirect("/wishlist")
         
     }catch(error){

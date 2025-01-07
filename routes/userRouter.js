@@ -12,6 +12,7 @@ const PasswordController=require("../controllers/user/passwordController");
 const reviewController =require("../controllers/user/reviewController");
 const authController =require("../controllers/user/passportController");
 const shopController =require("../controllers/user/shopController");
+const aboutController =require("../controllers/user/aboutsController")
 const {userAuth,adminAuth}= require("../middlewares/auth");
 
 //Error Management
@@ -30,6 +31,12 @@ router.get("/logout", userController.logout);
 router.get('/auth/google', authController.googleAuth);
 router.get('/auth/google/callback', authController.googleAuthCallback);
 router.get('/blocked', authController.blockedPage);
+
+
+//
+router.get('/about',aboutController.about);
+router.get('/service',aboutController.services)
+router.get('/contact',aboutController.contactus)
 
 //Home Page & Shopping page
 router.get("/",shopController.loadHomepage);

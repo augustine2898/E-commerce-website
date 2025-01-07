@@ -280,7 +280,7 @@ const dashboard = async (req, res) => {
             Order.countDocuments()
 
         ])
-        console.log("recentOrders:",recentOrders)
+        
         const totalSales = totalSalesResult[0]?.total || 0;
         const formattedRecentOrders = recentOrders.map(order => {
             const user = order.user 
@@ -300,7 +300,6 @@ const dashboard = async (req, res) => {
             };
         });
         
-        console.log(formattedRecentOrders)
         const totalPages = Math.ceil(totalItems / itemsPerPage);
         const dashboardData = {
             filter,

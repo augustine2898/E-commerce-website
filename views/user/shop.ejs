@@ -118,64 +118,61 @@
                 </div>
             </div>
 
-            <div class="row product__filter">
-                <% for (let i=0; i < products.length; i++) { %>
-                    <div class="col-6 col-sm-4 col-md-3 mb-4">
-                        <div class="product-card">
-                            <div class="product-img-action-wrap">
-                                <!-- Heart Icon on Top Right Corner -->
-                                <span class="wishlist-icon" onclick="toggleWishlist('<%= products[i]._id %>')">
-                                    <% if (wishlistProductIds.includes(products[i]._id.toString())) { %>
-                                        <i class="fas fa-heart filled-heart" id="heart-<%= products[i]._id %>"></i>
+            <div class="container">
+                <div class="row">
+                    <% for (let i=0; i < products.length; i++) { %>
+                        <div class="col-6 col-sm-4 col-md-3 mb-4">
+                            <div class="card product-card shadow-sm">
+                                <div class="position-relative">
+                                    <!-- Wishlist Icon -->
+                                    <span class="position-absolute top-0 end-0 p-2">
+                                        <% if (wishlistProductIds.includes(products[i]._id.toString())) { %>
+                                            <i class="fas fa-heart text-danger" id="heart-<%= products[i]._id %>"></i>
                                         <% } else { %>
-                                            <i class="far fa-heart empty-heart" id="heart-<%= products[i]._id %>"></i>
-                                            <% } %>
-                                </span>
-
-                                <a href="/productDetails?id=<%= products[i]._id %>">
-                                    <img class="product-image"
-                                        src="/uploads/product-image/<%= products[i].productImage[0] %>"
-                                        alt="<%= products[i].productName %>">
-                                </a>
-                            </div>
-
-                            <div class="product-info">
-                                <h3>
-                                    <%= products[i].productName %>
-                                </h3>
-
-                                <div class="status-section">
-                                    <% if (products[i].quantity> 0) { %>
-                                        <span class="status available">Available</span>
-                                        <% } else { %>
-                                            <span class="status out-of-stock">Out of Stock</span>
-                                            <% } %>
+                                            <i class="far fa-heart text-secondary" id="heart-<%= products[i]._id %>"></i>
+                                        <% } %>
+                                    </span>
+                                    <!-- Product Image -->
+                                    <a href="/productDetails?id=<%= products[i]._id %>">
+                                        <img src="/uploads/product-image/<%= products[i].productImage[0] %>" 
+                                             class="card-img-top product-image" 
+                                             alt="<%= products[i].productName %>">
+                                    </a>
                                 </div>
-
-                                <div class="price-section">
-                                    <% if (products[i].salePrice && products[i].regularPrice> products[i].salePrice) {
-                                        %>
-                                        <span class="original-price">₹<%= products[i].regularPrice %></span>
-                                        <span class="discounted-price">₹<%= products[i].salePrice %></span>
-                                        <span class="discount-percentage">
-                                            (<%= ((products[i].regularPrice - products[i].salePrice) /
-                                                products[i].regularPrice * 100).toFixed(0) %> % OFF)
-                                        </span>
+                                <div class="card-body text-center">
+                                    <!-- Product Name -->
+                                    <h5 class="card-title text-truncate"><%= products[i].productName %></h5>
+            
+                                    <!-- Status -->
+                                    <% if (products[i].quantity > 0) { %>
+                                        <span class="badge bg-success">Available</span>
+                                    <% } else { %>
+                                        <span class="badge bg-danger">Out of Stock</span>
+                                    <% } %>
+            
+                                    <!-- Pricing -->
+                                    <div class="mt-2">
+                                        <% if (products[i].salePrice && products[i].regularPrice > products[i].salePrice) { %>
+                                            <div>
+                                                <span class="text-muted text-decoration-line-through">₹<%= products[i].regularPrice %></span>
+                                                <span class="text-danger fw-bold">₹<%= products[i].salePrice %></span>
+                                                <small class="text-success">(<%= ((products[i].regularPrice - products[i].salePrice) / products[i].regularPrice * 100).toFixed(0) %>% OFF)</small>
+                                            </div>
                                         <% } else { %>
-                                            <span class="regular-price fw-bold ">₹<%= products[i].regularPrice %></span>
-                                            <% } %>
-                                </div>
-
-                                <div class="button-section">
-                                    <button class="cart-btn" data-product-id="<%= products[i]._id %>">Add to
-                                        Cart</button>
-                                    <button class="wishlist-btn" onclick="addToWishlist('<%= products[i]._id %>')">Add
-                                        to Wishlist</button>
+                                            <span class="fw-bold">₹<%= products[i].regularPrice %></span>
+                                        <% } %>
+                                    </div>
+            
+                                    <!-- Buttons -->
+                                    <div class="mt-3 d-flex justify-content-center gap-3">
+                                        <button class="btn btn-primary btn-lg px-4 py-2" style="width: 48%;" data-product-id="<%= products[i]._id %>">Add to Cart</button>
+                                        <button class="btn btn-outline-secondary btn-lg px-4 py-2" style="width: 48%;" onclick="addToWishlist('<%= products[i]._id %>')">Wishlist</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                     <% } %>
+                </div>
             </div>
 
         </div>

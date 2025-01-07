@@ -264,3 +264,86 @@ h3 {
     background-color: #f8d7da;
     color: #721c24;
 }
+
+
+/* Custom CSS */
+.product-card {
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.product-image {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-title {
+    font-size: 1rem;
+    color: #333;
+}
+
+.badge {
+    font-size: 0.8rem;
+}
+
+.btn {
+    font-size: 0.85rem;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+
+.wishlist-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    /* Ensure it stays above the image */
+}
+
+.wishlist-icon i {
+    font-size: 24px;
+    /* Adjust size if needed */
+    color: #fff;
+    /* White color for the heart */
+}
+
+.wishlist-icon .filled-heart {
+    color: #e74c3c;
+    /* Red color for filled heart */
+}
+
+.wishlist-icon .empty-heart {
+    color: #fff;
+    /* White color for empty heart */
+}
+
+/* Optional: Hover effect for the heart */
+.wishlist-icon:hover i {
+    transform: scale(1.1);
+    /* Slightly increase size on hover */
+    transition: transform 0.2s ease-in-out;
+}
+
+.btn {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+.btn-sm {
+    border-radius: 0.1rem;
+}
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.product-card .d-flex {
+    gap: 0.5rem;
+}
