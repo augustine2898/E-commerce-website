@@ -105,7 +105,6 @@ const getAllproducts = async (req, res) => {
 
         // Find products based on the query
         const productData = await Product.find(query)
-            .sort({updatedAt:-1})
             .limit(limit)
             .skip((page - 1) * limit)
             .populate('category')
