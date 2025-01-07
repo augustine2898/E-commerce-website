@@ -1,37 +1,40 @@
-console.log('productdetail.js is loaded and running.');
+
 document.addEventListener("DOMContentLoaded", function () {
-    const quantityContainer = document.querySelector(".quantity");
-    const minusBtn = quantityContainer.querySelector(".minus");
-    const plusBtn = quantityContainer.querySelector(".plus");
-    const inputBox = quantityContainer.querySelector(".input-box");
+  const quantityContainers = document.querySelectorAll(".quantity");
+  quantityContainers.forEach(quantityContainer => {
+      const minusBtn = quantityContainer.querySelector(".minus");
+      const plusBtn = quantityContainer.querySelector(".plus");
+      const inputBox = quantityContainer.querySelector(".input-box");
 
-    function updateButtonStates() {
-      const value = parseInt(inputBox.value);
-      minusBtn.disabled = value <= 1;
-      plusBtn.disabled = value >= parseInt(inputBox.max);
-    }
+      function updateButtonStates() {
+          const value = parseInt(inputBox.value);
+          minusBtn.disabled = value <= 1;
+          plusBtn.disabled = value >= parseInt(inputBox.max);
+      }
 
-    function decreaseValue() {
-      let value = parseInt(inputBox.value);
-      value = isNaN(value) ? 1 : Math.max(value - 1, 1);
-      inputBox.value = value;
+      function decreaseValue() {
+          let value = parseInt(inputBox.value);
+          value = isNaN(value) ? 1 : Math.max(value - 1, 1);
+          inputBox.value = value;
+          updateButtonStates();
+          console.log('Quantity decreased: ', value);
+      }
+
+      function increaseValue() {
+          let value = parseInt(inputBox.value);
+          value = isNaN(value) ? 1 : Math.min(value + 1, parseInt(inputBox.max));
+          inputBox.value = value;
+          updateButtonStates();
+          console.log('Quantity increased: ', value);
+      }
+
+      minusBtn.addEventListener("click", decreaseValue);
+      plusBtn.addEventListener("click", increaseValue);
+
       updateButtonStates();
-      console.log('Quantity decreased: ', value);
-    }
-
-    function increaseValue() {
-      let value = parseInt(inputBox.value);
-      value = isNaN(value) ? 1 : Math.min(value + 1, parseInt(inputBox.max));
-      inputBox.value = value;
-      updateButtonStates();
-      console.log('Quantity increased: ', value);
-    }
-
-    minusBtn.addEventListener("click", decreaseValue);
-    plusBtn.addEventListener("click", increaseValue);
-
-    updateButtonStates();
   });
+});
+
 
   function scrollToReviews() {
     const reviewsSection = document.getElementById('customer-reviews');
